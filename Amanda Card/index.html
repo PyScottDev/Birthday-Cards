@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday Amanda</title>
+
+    <!-- Oswald font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* New palette from your screenshot */
+        --bg-dark: #6a0066;
+        --beige: #e8d4b7;
+        --green: #934790; /* using existing var name to avoid changing anything else */
+        --pink: #ff0066;
+
+        /* Keep snake game colors the same */
+        --snake: #ffffff;
+        --food: #2b6fe0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background-color: var(--bg-dark);
+        font-family: "Oswald", sans-serif;
+        text-align: center;
+        color: var(--beige);
+      }
+
+      main {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 10px 40px;
+      }
+
+      .banner {
+        background-color: var(--beige);
+        color: var(--green);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      }
+
+      .banner h1,
+      .banner h2 {
+        margin: 0;
+        padding: 14px 8px;
+        letter-spacing: 1px;
+      }
+
+      .game-container {
+        margin: 24px auto 16px;
+        max-width: 600px;
+      }
+
+      .scoreboard {
+        display: flex;
+        justify-content: space-between;
+        color: var(--beige);
+        font-size: 1rem;
+        margin-bottom: 6px;
+        padding: 0 4px;
+      }
+
+      canvas {
+        background-color: #000;
+        border: 2px solid var(--beige);
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* When the game container is fullscreen */
+      #game-container:fullscreen {
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        margin: 0;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow: auto; /* scroll if absolutely necessary */
+      }
+
+      /* Make the canvas fill most of the width in fullscreen,
+        but leave room for controls underneath */
+      #game-container:fullscreen #game-canvas {
+        width: 100%;
+        height: auto; /* keeps the aspect ratio */
+        max-height: 70vh; /* leaves ~30% for controls + text */
+      }
+
+      /* Keep the controls visible under the game in fullscreen */
+      #game-container:fullscreen .controls-row {
+        margin-top: 10px;
+      }
+
+      /* Optional: shrink the hint text a bit in fullscreen */
+      #game-container:fullscreen .hint {
+        font-size: 0.75rem;
+      }
+
+      .controls-row {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 10px;
+      }
+
+      /* Bottom-left: D-pad */
+      .dpad {
+        display: grid;
+        grid-template-columns: repeat(3, 44px);
+        grid-template-rows: repeat(3, 44px);
+        gap: 4px;
+        justify-items: center;
+        align-items: center;
+        margin-left: 4px;
+      }
+
+      .dpad button {
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        border: 1px solid var(--beige);
+        background-color: var(--green);
+        color: var(--beige);
+        font-size: 1.3rem;
+        cursor: pointer;
+      }
+
+      .dpad button:active {
+        transform: scale(0.95);
+        filter: brightness(1.1);
+      }
+
+      .dpad .empty {
+        background: transparent;
+        border: none;
+        pointer-events: none;
+      }
+
+      /* Bottom-right: fullscreen button */
+      #fullscreen-btn {
+        margin-right: 4px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--beige);
+        background-color: transparent;
+        color: var(--beige);
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      #fullscreen-btn:active {
+        transform: scale(0.97);
+        background-color: rgba(232, 212, 183, 0.12);
+      }
+
+      .hint {
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: rgba(232, 212, 183, 0.7);
+      }
+
+      .foot {
+        background-color: var(--pink);
+        color: var(--beige);
+        margin-top: 18px;
+        padding: 12px 8px;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="banner">
+        <h1>Happy Birthday Amanda</h1>
+        <h2>Old enough to remember this game</h2>
+      </div>
+
+      <!-- Game appears between the two h2 elements -->
+      <div class="game-container" id="game-container">
+        <div class="scoreboard">
+          <span id="score-display">Score: 0</span>
+          <span id="high-score-display">High score: 0</span>
+        </div>
+
+        <canvas id="game-canvas" width="600" height="400"></canvas>
+
+        <div class="controls-row">
+          <!-- Bottom-left: on-screen controls -->
+          <div class="dpad">
+            <button class="empty"></button>
+            <button data-dir="UP">▲</button>
+            <button class="empty"></button>
+
+            <button data-dir="LEFT">◀</button>
+            <button data-dir="DOWN">▼</button>
+            <button data-dir="RIGHT">▶</button>
+
+            <button class="empty"></button>
+            <button class="empty"></button>
+            <button class="empty"></button>
+          </div>
+
+          <!-- Bottom-right: fullscreen -->
+          <button id="fullscreen-btn">Fullscreen</button>
+        </div>
+
+        <p class="hint">
+          Use the arrow keys or the buttons to play. Don’t eat yourself!
+        </p>
+      </div>
+
+      <h2 class="foot">but not too old to play it</h2>
+    </main>
+
+    <script>
+      // ====== CONFIG ======
+      const canvas = document.getElementById("game-canvas");
+      const ctx = canvas.getContext("2d");
+
+      const GRID_SIZE = 20; // each cell = 20px
+      const COLS = canvas.width / GRID_SIZE; // 600 / 20 = 30
+      const ROWS = canvas.height / GRID_SIZE; // 400 / 20 = 20
+
+      const SNAKE_COLOR = "#ffffff";
+      const FOOD_COLOR = "#2b6fe0";
+
+      // --- SOUNDS ---
+      const eatSound = new Audio("eat.wav");
+      const gameOverSound = new Audio("game_over.wav");
+
+      // Make them play instantly on mobile (prevent delay)
+      eatSound.preload = "auto";
+      gameOverSound.preload = "auto";
+
+      let snake = [];
+      let direction = "RIGHT";
+      let nextDirection = "RIGHT";
+      let food = { x: 10, y: 10 };
+      let score = 0;
+      let highScore =
+        Number(localStorage.getItem("birthdaySnakeHighScore")) || 0;
+      let gameInterval = null;
+      let speed = 150; // ms
+
+      const scoreDisplay = document.getElementById("score-display");
+      const highScoreDisplay = document.getElementById("high-score-display");
+      highScoreDisplay.textContent = "High score: " + highScore;
+
+      // ====== INITIAL SETUP ======
+      function initSnake() {
+        const startX = Math.floor(COLS / 2);
+        const startY = Math.floor(ROWS / 2);
+        snake = [
+          { x: startX, y: startY },
+          { x: startX - 1, y: startY },
+          { x: startX - 2, y: startY },
+        ];
+        direction = "RIGHT";
+        nextDirection = "RIGHT";
+      }
+
+      function placeFood() {
+        let newFood;
+        while (true) {
+          newFood = {
+            x: Math.floor(Math.random() * COLS),
+            y: Math.floor(Math.random() * ROWS),
+          };
+          if (!snake.some((seg) => seg.x === newFood.x && seg.y === newFood.y)) {
+            break;
+          }
+        }
+        food = newFood;
+      }
+
+      function updateScoreboard() {
+        scoreDisplay.textContent = "Score: " + score;
+        highScoreDisplay.textContent = "High score: " + highScore;
+      }
+
+      function resetGame() {
+        score = 0;
+        updateScoreboard();
+        initSnake();
+        placeFood();
+      }
+
+      // ====== DRAWING ======
+      function drawCell(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+      }
+
+      function draw() {
+        // background
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // draw food
+        drawCell(food.x, food.y, FOOD_COLOR);
+
+        // draw snake
+        snake.forEach((segment, index) => {
+          drawCell(segment.x, segment.y, SNAKE_COLOR);
+        });
+      }
+
+      // ====== GAME LOGIC ======
+      function step() {
+        direction = nextDirection; // apply buffered direction
+
+        const head = snake[0];
+        const newHead = { x: head.x, y: head.y };
+
+        if (direction === "RIGHT") newHead.x += 1;
+        else if (direction === "LEFT") newHead.x -= 1;
+        else if (direction === "UP") newHead.y -= 1;
+        else if (direction === "DOWN") newHead.y += 1;
+
+        // Wrap around edges (like your Python version)
+        if (newHead.x < 0) newHead.x = COLS - 1;
+        if (newHead.x >= COLS) newHead.x = 0;
+        if (newHead.y < 0) newHead.y = ROWS - 1;
+        if (newHead.y >= ROWS) newHead.y = 0;
+
+        // Self-collision check
+        if (snake.some((seg) => seg.x === newHead.x && seg.y === newHead.y)) {
+          // Game over, reset snake & score
+          gameOverSound.currentTime = 0;
+          gameOverSound.play();
+
+          resetGame();
+          draw();
+          return;
+        }
+
+        // Move snake
+        snake.unshift(newHead);
+
+        // Check food
+        if (newHead.x === food.x && newHead.y === food.y) {
+          eatSound.currentTime = 0; // allow rapid play
+          eatSound.play();
+
+          score += 1;
+          if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("birthdaySnakeHighScore", highScore);
+          }
+          updateScoreboard();
+          placeFood();
+        } else {
+          snake.pop(); // remove tail
+        }
+
+        draw();
+      }
+
+      // ====== CONTROLS ======
+      function changeDirection(newDir) {
+        // Prevent instant 180° turns (like your Python version)
+        if (
+          (newDir === "UP" && direction === "DOWN") ||
+          (newDir === "DOWN" && direction === "UP") ||
+          (newDir === "LEFT" && direction === "RIGHT") ||
+          (newDir === "RIGHT" && direction === "LEFT")
+        ) {
+          return;
+        }
+        nextDirection = newDir;
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp" || e.key === "w") changeDirection("UP");
+        else if (e.key === "ArrowDown" || e.key === "s")
+          changeDirection("DOWN");
+        else if (e.key === "ArrowLeft" || e.key === "a")
+          changeDirection("LEFT");
+        else if (e.key === "ArrowRight" || e.key === "d")
+          changeDirection("RIGHT");
+      });
+
+      // On-screen buttons
+      document
+        .querySelectorAll(".dpad button[data-dir]")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const dir = button.getAttribute("data-dir");
+            changeDirection(dir);
+          });
+        });
+
+      // ====== FULLSCREEN BUTTON (bottom-right) ======
+      const fullscreenBtn = document.getElementById("fullscreen-btn");
+      const gameContainer = document.getElementById("game-container");
+
+      fullscreenBtn.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          if (gameContainer.requestFullscreen) {
+            gameContainer.requestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      });
+
+      // ====== START GAME ======
+      function startGame() {
+        resetGame();
+        draw();
+        if (gameInterval) clearInterval(gameInterval);
+        gameInterval = setInterval(step, speed);
+      }
+
+      startGame();
+    </script>
+  </body>
+</html>
