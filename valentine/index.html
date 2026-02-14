@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Valentine Pacman ❤️</title>
+    <style>
+        :root {
+            --bg-color: #1a051d;
+            --primary-pink: #ff4d6d;
+            --wall-color: #ffb3c1;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        h1 {
+            color: var(--primary-pink);
+            margin: 5px 0;
+            font-size: 1.4rem;
+            text-shadow: 2px 2px #4a0e1c;
+            text-align: center;
+        }
+
+        #game-container {
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.4);
+            border: 4px solid var(--wall-color);
+            border-radius: 10px;
+            background: black;
+        }
+
+        canvas { display: block; }
+
+        #score {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-pink);
+            margin-bottom: 5px;
+        }
+
+        #overlay, #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        #overlay { display: none; }
+
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            background: var(--primary-pink);
+            border: none;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Happy Valentine's Day! ❤️</h1>
+    <div id="score">SCORE: 0</div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="start-screen">
+            <p style="font-size: 1.2rem;">Don't get your heart broken, Roberta!</p>
+            <button onclick="startGame()">START GAME</button>
+        </div>
+
+        <div id="overlay">
+            <h2 id="statusText">YOU WON! ❤️</h2>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const overlay = document.getElementById('overlay');
+        const startScreen = document.getElementById('start-screen');
+        const statusText = document.getElementById('statusText');
+
+        // Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type, duration, vol = 0.1) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        const tileSize = 20;
+        const rows = 21;
+        const cols = 19;
+        canvas.width = cols * tileSize;
+        canvas.height = rows * tileSize;
+
+        let score = 0;
+        let gameRunning = false;
+
+        // 1=Wall, 0=Heart, 2=Empty
+        const map = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
+            [2,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,2],
+            [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],
+            [2,2,2,2,0,2,2,1,2,2,2,1,2,2,0,2,2,2,2],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [2,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,2],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,1,0,0,0,0,0,2,0,0,0,0,0,1,0,0,1],
+            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        const pacman = { x: 9*tileSize, y: 15*tileSize, dir:{x:0,y:0}, nextDir:{x:0,y:0}, speed:2 };
+        const ghosts = [
+            { x: 9*tileSize, y: 9*tileSize, dir:{x:0,y:0}, emoji:"💔", speed:1.25 },
+            { x: 8*tileSize, y: 9*tileSize, dir:{x:0,y:0}, emoji:"💔", speed:1.25 }
+        ];
+
+        function startGame() {
+            audioCtx.resume();
+            startScreen.style.display = 'none';
+            gameRunning = true;
+            update();
+            playSound(523, 'square', 0.15);
+        }
+
+        function canMove(gx, gy) {
+            if (gx < 0 || gx >= cols || gy < 0 || gy >= rows) return false;
+            return map[gy][gx] !== 1;
+        }
+
+        function update() {
+            if (!gameRunning) return;
+
+            // Pacman movement logic
+            if (pacman.x % tileSize === 0 && pacman.y % tileSize === 0) {
+                const gx = pacman.x / tileSize;
+                const gy = pacman.y / tileSize;
+                if (map[gy][gx] === 0) {
+                    map[gy][gx] = 2;
+                    score += 10;
+                    scoreElement.innerText = `SCORE: ${score}`;
+                    playSound(900, 'sine', 0.05, 0.05);
+                    if (!map.flat().includes(0)) endGame("Love Wins! ❤️", 880);
+                }
+                if (canMove(gx + pacman.nextDir.x, gy + pacman.nextDir.y)) pacman.dir = {...pacman.nextDir};
+                if (!canMove(gx + pacman.dir.x, gy + pacman.dir.y)) pacman.dir = {x:0,y:0};
+            }
+            pacman.x += pacman.dir.x * pacman.speed;
+            pacman.y += pacman.dir.y * pacman.speed;
+
+            // Ghost AI: Chase logic
+            ghosts.forEach(g => {
+                if (g.x % tileSize === 0 && g.y % tileSize === 0) {
+                    const gx = g.x / tileSize;
+                    const gy = g.y / tileSize;
+                    const px = pacman.x / tileSize;
+                    const py = pacman.y / tileSize;
+
+                    const dirs = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+                    // Filter moves to stay in bounds and avoid walls
+                    const valid = dirs.filter(d => canMove(gx+d.x, gy+d.y));
+
+                    if (valid.length > 0) {
+                        // Chase: Sort directions by which one gets closer to Pacman
+                        valid.sort((a, b) => {
+                            const distA = Math.hypot((gx + a.x) - px, (gy + a.y) - py);
+                            const distB = Math.hypot((gx + b.x) - px, (gy + b.y) - py);
+                            return distA - distB;
+                        });
+                        // 70% chance to chase, 30% random (to keep it from being impossible)
+                        g.dir = Math.random() < 0.7 ? valid[0] : valid[Math.floor(Math.random() * valid.length)];
+                    }
+                }
+                g.x += g.dir.x * g.speed;
+                g.y += g.dir.y * g.speed;
+
+                // Collision Detection
+                if (Math.abs(pacman.x - g.x) < 14 && Math.abs(pacman.y - g.y) < 14) {
+                    endGame("Broken hearts... 💔", 120);
+                }
+            });
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Draw Map
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    if(map[r][c] === 1) {
+                        ctx.fillStyle = '#ffb3c1';
+                        ctx.fillRect(c*tileSize+1, r*tileSize+1, tileSize-2, tileSize-2);
+                    } else if(map[r][c] === 0) {
+                        ctx.font = "12px Arial";
+                        ctx.fillText("❤️", c*tileSize + 4, r*tileSize + 14);
+                    }
+                }
+            }
+            // Draw Characters
+            ctx.font = "18px Arial";
+            ctx.fillText("😍", pacman.x + 1, pacman.y + 16);
+            ghosts.forEach(g => ctx.fillText(g.emoji, g.x + 1, g.y + 16));
+        }
+
+        function endGame(text, freq) {
+            gameRunning = false;
+            statusText.innerText = text;
+            overlay.style.display = 'flex';
+            playSound(freq, 'sawtooth', 0.4);
+        }
+
+        // Improved Swipe
+        let tsX, tsY;
+        window.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; }, {passive: false});
+        window.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - tsX;
+            const dy = e.changedTouches[0].clientY - tsY;
+            if (Math.abs(dx) > Math.abs(dy)) pacman.nextDir = dx > 0 ? {x:1, y:0} : {x:-1, y:0};
+            else pacman.nextDir = dy > 0 ? {x:0, y:1} : {x:0, y:-1};
+        }, {passive: false});
+
+        function resetGame() { location.reload(); }
+    </script>
+</body>
+</html>
