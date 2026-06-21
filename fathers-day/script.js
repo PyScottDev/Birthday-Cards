@@ -15,7 +15,7 @@ const FALLBACK_JOKES = [
     "What do you call a sleeping bull? A bulldozer."
 ];
 
-const TOTAL_IMAGES = 8;
+const TOTAL_IMAGES = 18;
 let currentImageIndex = 0;
 
 // Cache DOM elements
