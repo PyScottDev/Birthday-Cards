@@ -16,7 +16,7 @@ const FALLBACK_JOKES = [
 ];
 
 const TOTAL_IMAGES = 8;
-let currentImageIndex = -1;
+let currentImageIndex = 0;
 
 // Cache DOM elements
 const dadPhoto = document.getElementById('dad-photo');
@@ -28,15 +28,16 @@ const lightboxImg = document.getElementById('lightbox-img');
 const closeLightboxBtn = document.getElementById('close-lightbox');
 
 /**
- * Gets a random image index between 1 and TOTAL_IMAGES, 
- * ensuring it doesn't repeat the currently active image.
+ * Gets the next image index in sequence:
+ * dad-1.jpg → dad-2.jpg → ... → dad-8.jpg → dad-1.jpg
  */
 function getNextImageIndex() {
-    let nextIndex;
-    do {
-        nextIndex = Math.floor(Math.random() * TOTAL_IMAGES) + 1;
-    } while (nextIndex === currentImageIndex);
-    currentImageIndex = nextIndex;
+    currentImageIndex += 1;
+
+    if (currentImageIndex > TOTAL_IMAGES) {
+        currentImageIndex = 1;
+    }
+
     return currentImageIndex;
 }
 
