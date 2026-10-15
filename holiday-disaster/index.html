@@ -1,0 +1,3322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HOLIDAY DISASTER! — Can you survive the world's worst holiday?</title>
+  <style>
+    /* ==========================================================================
+       CSS VARIABLES & THEME TOKENS (Projector-First High Contrast Travel Theme)
+       ========================================================================== */
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-accent: #fff7ed;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-light: #f8fafc;
+      --primary: #ea580c;
+      --primary-hover: #c2410c;
+      --secondary: #0284c7;
+      --secondary-hover: #0369a1;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --purple: #7c3aed;
+      --purple-bg: #f3e8ff;
+      --border: #e2e8f0;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow-lg: 0 20px 35px -10px rgba(15, 23, 42, 0.35);
+      --shadow-md: 0 8px 20px -4px rgba(15, 23, 42, 0.12);
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at top right, #1e293b 0%, #0f172a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.45;
+    }
+
+    /* ==========================================================================
+       TOP NAVIGATION, TURN INDICATOR & RESOURCE BAR
+       ========================================================================== */
+    .top-bar {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, #f97316, #dc2626);
+      color: #fff;
+      font-weight: 900;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .surprise-badge {
+      background: #7c3aed;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: none;
+    }
+
+    .surprise-badge.active {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* 5-Player Turn Indicator */
+    .turn-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .turn-label {
+      color: #cbd5e1;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .player-pill {
+      background: transparent;
+      color: #94a3b8;
+      border: 2px solid transparent;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .player-pill:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .player-pill.active {
+      background: #facc15;
+      color: #0f172a;
+      border-color: #fef08a;
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.65);
+      transform: scale(1.06);
+      font-weight: 900;
+    }
+
+    /* Resource Meters */
+    .resources-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .res-pill {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      min-width: 135px;
+      position: relative;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .res-pill.pulse-up {
+      animation: pulseGreen 0.7s ease;
+    }
+
+    .res-pill.pulse-down {
+      animation: pulseRed 0.7s ease;
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.09); background: rgba(22, 163, 74, 0.45); }
+    }
+
+    @keyframes pulseRed {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.09); background: rgba(220, 38, 38, 0.45); }
+    }
+
+    .res-icon {
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .res-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .res-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    .res-value {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .res-progress-track {
+      width: 75px;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+
+    .res-progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fill-happy {
+      background: linear-gradient(90deg, #22c55e, #84cc16);
+    }
+
+    .fill-disaster {
+      background: linear-gradient(90deg, #f59e0b, #ef4444);
+    }
+
+    /* Top utility buttons */
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .util-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 8px 13px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .util-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================================================
+       MAIN STAGE CONTAINER (16:9 Projector Friendly)
+       ========================================================================== */
+    .stage-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 24px;
+      max-width: 1480px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .game-card {
+      background: var(--bg-card);
+      width: 100%;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 46% 54%;
+      min-height: 600px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      animation: cardFadeIn 0.35s ease;
+    }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       LEFT COLUMN: PHOTOGRAPH, FALLBACK ARTWORK, BADGES & CHARACTER QUOTE
+       ========================================================================== */
+    .visual-pane {
+      position: relative;
+      background: #1e293b;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      min-height: 420px;
+    }
+
+    .scene-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 2;
+      transition: opacity 0.35s ease, transform 0.6s ease;
+    }
+
+    .scene-svg-fallback {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visual-overlay-top {
+      position: relative;
+      z-index: 5;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.78) 0%, transparent 100%);
+    }
+
+    .act-badge {
+      background: rgba(15, 23, 42, 0.88);
+      color: #facc15;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 13px;
+      border-radius: 999px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border: 1px solid rgba(250, 204, 21, 0.4);
+      backdrop-filter: blur(4px);
+    }
+
+    .location-badge {
+      background: rgba(255, 255, 255, 0.92);
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 13px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .visual-overlay-bottom {
+      position: relative;
+      z-index: 5;
+      padding: 20px 16px 12px;
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.93) 0%, rgba(15, 23, 42, 0.65) 70%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .character-bubble {
+      background: #ffffff;
+      color: #0f172a;
+      padding: 12px 16px;
+      border-radius: 16px 16px 16px 4px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+      border-left: 6px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: popBubble 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popBubble {
+      from { opacity: 0; transform: scale(0.92) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .char-avatar {
+      font-size: 2.2rem;
+      line-height: 1;
+      background: #fff7ed;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fed7aa;
+      flex-shrink: 0;
+    }
+
+    .char-text-wrap {
+      flex: 1;
+    }
+
+    .char-name {
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    .char-quote {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 2px;
+    }
+
+    .photo-credit {
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.72);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .photo-credit a {
+      color: #bae6fd;
+      text-decoration: underline;
+    }
+
+    /* ==========================================================================
+       RIGHT COLUMN: STORY CONTENT, SCAFFOLDING & INTERACTIVE DECISIONS
+       ========================================================================== */
+    .content-pane {
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--bg-card);
+      overflow-y: auto;
+    }
+
+    .scene-header {
+      margin-bottom: 14px;
+    }
+
+    .turn-callout {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fef9c3;
+      color: #854d0e;
+      border: 2px solid #fde047;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .scene-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text-main);
+      line-height: 1.15;
+      letter-spacing: -0.4px;
+    }
+
+    .scene-description {
+      font-size: 1.32rem;
+      color: #1e293b;
+      line-height: 1.55;
+      margin: 14px 0 20px;
+      background: var(--bg-subtle);
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      border-left: 5px solid var(--secondary);
+    }
+
+    /* Highlighted Unit 10 Collocations & Target Vocabulary */
+    .colloc {
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 6px;
+      border-bottom: 2px solid #7dd3fc;
+      white-space: nowrap;
+    }
+
+    .grammar-highlight {
+      background: #fef3c7;
+      color: #92400e;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 6px;
+      border-bottom: 2px solid #fcd34d;
+    }
+
+    /* ==========================================================================
+       DECISION BUTTONS & LANGUAGE CHALLENGE BOXES
+       ========================================================================== */
+    .interaction-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: auto;
+    }
+
+    .zone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .interaction-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+
+    .badge-story {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .badge-challenge {
+      background: var(--purple-bg);
+      color: var(--purple);
+      border: 1px solid #d8b4fe;
+    }
+
+    .hint-btn {
+      background: #fef3c7;
+      color: #92400e;
+      border: 2px solid #fbbf24;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .hint-btn:hover {
+      background: #fde68a;
+      transform: scale(1.04);
+    }
+
+    .hint-box {
+      background: #fffbeb;
+      border: 2px dashed #f59e0b;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 1.05rem;
+      color: #78350f;
+      display: none;
+      animation: cardFadeIn 0.25s ease;
+    }
+
+    .hint-box.visible {
+      display: block;
+    }
+
+    /* Visual Timeline for Past Perfect */
+    .timeline-box {
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .timeline-step {
+      flex: 1;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 8px 12px;
+      border-left: 4px solid #7c3aed;
+    }
+
+    .timeline-step.step-2 {
+      border-left-color: #0284c7;
+    }
+
+    .timeline-step-label {
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    .timeline-step-text {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+
+    .timeline-arrow {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #94a3b8;
+    }
+
+    /* Challenge Prompt Box */
+    .challenge-prompt-box {
+      background: #faf5ff;
+      border: 2px solid #d8b4fe;
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 6px;
+    }
+
+    .challenge-instruction {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #6b21a8;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .challenge-sentence {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #1e1b4b;
+    }
+
+    .blank-slot {
+      display: inline-block;
+      min-width: 120px;
+      border-bottom: 3px solid #7c3aed;
+      color: #7c3aed;
+      text-align: center;
+      padding: 0 8px;
+      background: #f3e8ff;
+      border-radius: 6px;
+    }
+
+    /* Choice Buttons */
+    .choices-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: #ffffff;
+      border: 2.5px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      transition: all 0.18s ease;
+      box-shadow: 0 3px 6px rgba(15, 23, 42, 0.05);
+    }
+
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #fff7ed;
+      transform: translateX(4px);
+      box-shadow: 0 6px 15px rgba(234, 88, 12, 0.15);
+    }
+
+    .choice-btn.challenge-opt:hover:not(:disabled) {
+      border-color: var(--purple);
+      background: #faf5ff;
+      box-shadow: 0 6px 15px rgba(124, 58, 237, 0.15);
+    }
+
+    .choice-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      background: #f1f5f9;
+    }
+
+    .choice-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .choice-letter {
+      background: #0f172a;
+      color: #ffffff;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+
+    .choice-btn:hover:not(:disabled) .choice-letter {
+      background: var(--primary);
+    }
+
+    .choice-btn.challenge-opt .choice-letter {
+      background: var(--purple);
+    }
+
+    .cost-tag {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 0.9rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #fcd34d;
+      white-space: nowrap;
+    }
+
+    .locked-tag {
+      background: #fee2e2;
+      color: #991b1b;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       WORD-BLOCK SENTENCE BUILDER (Act 3 & 4 Scaffolding)
+       ========================================================================== */
+    .builder-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .builder-answer-box {
+      min-height: 64px;
+      background: #ffffff;
+      border: 3px dashed #9333ea;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .builder-placeholder {
+      color: #94a3b8;
+      font-size: 1.05rem;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 6px 0;
+    }
+
+    .word-chip {
+      background: #ffffff;
+      color: #1e1b4b;
+      border: 2.5px solid #7c3aed;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #c4b5fd;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .word-chip:hover {
+      background: #f3e8ff;
+      transform: translateY(-2px);
+    }
+
+    .word-chip.in-answer {
+      background: #7c3aed;
+      color: #ffffff;
+      box-shadow: 0 3px 0 #4c1d95;
+    }
+
+    .word-chip.used {
+      opacity: 0.3;
+      pointer-events: none;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .builder-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #1e293b;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-primary-submit {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: #ffffff;
+      border: none;
+      padding: 12px 26px;
+      border-radius: var(--radius-sm);
+      font-size: 1.12rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+    }
+
+    .btn-primary-submit:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* ==========================================================================
+       OUTCOME & FEEDBACK CARD (Shown after choosing)
+       ========================================================================== */
+    .feedback-card {
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      border: 3px solid #cbd5e1;
+      animation: popBubble 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feedback-card.story-outcome {
+      background: #f0f9ff;
+      border-color: #38bdf8;
+    }
+
+    .feedback-card.correct-outcome {
+      background: #f0fdf4;
+      border-color: #22c55e;
+    }
+
+    .feedback-card.incorrect-outcome {
+      background: #fffbeb;
+      border-color: #f59e0b;
+    }
+
+    .feedback-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feedback-text {
+      font-size: 1.2rem;
+      color: #0f172a;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .completed-sentence-banner {
+      background: #ffffff;
+      border-left: 5px solid #16a34a;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: #14532d;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .delta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .delta-pill {
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 5px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .delta-good {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .delta-bad {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .delta-neutral {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .continue-btn {
+      background: linear-gradient(135deg, #ea580c, #d97706);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 15px 26px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(234, 88, 12, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      margin-top: 4px;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(234, 88, 12, 0.45);
+    }
+
+    /* ==========================================================================
+       START SCREEN & FINAL ENDING SCREEN
+       ========================================================================== */
+    .full-screen-card {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 45% 55%;
+      min-height: 600px;
+    }
+
+    .stars-row {
+      font-size: 2.2rem;
+      letter-spacing: 4px;
+      margin: 6px 0;
+    }
+
+    .summary-list {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 12px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .summary-item {
+      font-size: 1.1rem;
+      color: #1e293b;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-weight: 600;
+    }
+
+    .final-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 10px 0 16px;
+    }
+
+    .final-stat-box {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      border: 2px solid #e2e8f0;
+    }
+
+    .final-stat-val {
+      font-size: 1.65rem;
+      font-weight: 900;
+      color: #0f172a;
+    }
+
+    .final-stat-lbl {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    .ending-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .btn-replay {
+      flex: 1;
+      min-width: 210px;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      font-size: 1.15rem;
+      font-weight: 900;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease;
+    }
+
+    .btn-replay:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-normal-replay {
+      background: #0284c7;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+    }
+
+    .btn-surprise-replay {
+      background: linear-gradient(135deg, #7c3aed, #db2777);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+    }
+
+    /* ==========================================================================
+       MODALS (Restart Confirmation & Unit 10 Vocabulary / Grammar Helper)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 720px;
+      width: 100%;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      max-height: 88vh;
+      overflow-y: auto;
+      animation: popBubble 0.25s ease;
+    }
+
+    .modal-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
+
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .vocab-card {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .vocab-card h4 {
+      color: var(--primary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .vocab-card ul {
+      list-style: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1024px) {
+      .game-card, .full-screen-card {
+        grid-template-columns: 1fr;
+      }
+      .visual-pane {
+        min-height: 300px;
+      }
+      .scene-title {
+        font-size: 1.65rem;
+      }
+      .scene-description {
+        font-size: 1.15rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP BAR: BRAND, 5-PLAYER TURN INDICATOR, RESOURCES, CONTROLS
+       ======================================================================== -->
+  <header class="top-bar">
+    <div class="brand-group">
+      <div class="brand-logo" id="logoHomeBtn" title="Holiday Disaster!">
+        <span>✈️</span>
+        <span>HOLIDAY DISASTER!</span>
+      </div>
+      <span class="surprise-badge" id="surpriseBadge">🎲 Surprise Mode</span>
+    </div>
+
+    <!-- 5-Player Turn Indicator -->
+    <div class="turn-bar" aria-label="Classroom Player Turn Indicator">
+      <span class="turn-label">Class Turn:</span>
+      <button type="button" class="player-pill active" data-player="1">P1</button>
+      <button type="button" class="player-pill" data-player="2">P2</button>
+      <button type="button" class="player-pill" data-player="3">P3</button>
+      <button type="button" class="player-pill" data-player="4">P4</button>
+      <button type="button" class="player-pill" data-player="5">P5</button>
+    </div>
+
+    <!-- Three Core Resources: Money, Happiness, Disaster Level -->
+    <div class="resources-bar">
+      <div class="res-pill" id="resMoneyBox">
+        <span class="res-icon">💶</span>
+        <div class="res-info">
+          <span class="res-title">Money</span>
+          <span class="res-value" id="valMoney">€200</span>
+        </div>
+      </div>
+
+      <div class="res-pill" id="resHappyBox">
+        <span class="res-icon" id="iconHappy">😄</span>
+        <div class="res-info">
+          <span class="res-title">Happiness <span id="valHappy">75</span>%</span>
+          <div class="res-progress-track">
+            <div class="res-progress-fill fill-happy" id="barHappy" style="width: 75%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="res-pill" id="resDisasterBox">
+        <span class="res-icon">🌋</span>
+        <div class="res-info">
+          <span class="res-title">Disaster <span id="valDisaster">10</span>%</span>
+          <div class="res-progress-track">
+            <div class="res-progress-fill fill-disaster" id="barDisaster" style="width: 10%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher Helper Controls -->
+    <div class="top-actions">
+      <button type="button" class="util-btn" id="btnVocabHelper" title="Unit 10 Language Reference">
+        <span>📖</span> <span>Unit 10 Help</span>
+      </button>
+      <button type="button" class="util-btn" id="btnRestartPrompt" title="Restart Game">
+        <span>🔄</span> <span>Restart</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN STAGE
+       ======================================================================== -->
+  <main class="stage-wrapper">
+    <section class="game-card" id="gameStage" aria-live="polite">
+      <!-- Dynamic Scene Content Rendered via JavaScript -->
+    </section>
+  </main>
+
+  <!-- ========================================================================
+       UNIT 10 VOCABULARY & GRAMMAR CHEAT-SHEET MODAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="vocabModal">
+    <div class="modal-box">
+      <h2 class="modal-title">📖 Unit 10: Holidays — Classroom Language Helper</h2>
+      <p style="color:#475569; font-weight:600;">Use these useful expressions and grammar rules to survive your holiday!</p>
+
+      <div class="timeline-box" style="margin: 14px 0;">
+        <div class="timeline-step">
+          <div class="timeline-step-label">1st Action (Earlier in the Past)</div>
+          <div class="timeline-step-text">PAST PERFECT: had + past participle</div>
+          <div style="font-size:0.88rem; color:#6b21a8; margin-top:2px;">"The plane <u>had left</u> at 10:00..."</div>
+        </div>
+        <div class="timeline-arrow">➔</div>
+        <div class="timeline-step step-2">
+          <div class="timeline-step-label">2nd Action (Later in the Past)</div>
+          <div class="timeline-step-text">PAST SIMPLE: arrived / found / saw</div>
+          <div style="font-size:0.88rem; color:#0369a1; margin-top:2px;">"...when we <u>arrived</u> at 10:30."</div>
+        </div>
+      </div>
+
+      <div class="vocab-grid">
+        <div class="vocab-card">
+          <h4>📌 Holiday Collocations</h4>
+          <ul>
+            <li>• <b>book</b> a flight / a hotel room / a table</li>
+            <li>• <b>check in</b> at the airport / reception desk</li>
+            <li>• <b>get</b> lost / sunburned / on a plane</li>
+            <li>• <b>go</b> abroad / sightseeing / hiking / cycling</li>
+            <li>• <b>hire</b> a car / a tour guide / skis</li>
+            <li>• <b>stay</b> at a hotel / on a campsite / at home</li>
+          </ul>
+        </div>
+        <div class="vocab-card">
+          <h4>😮 -ED vs -ING Adjectives</h4>
+          <ul>
+            <li>• <b>-ED = How a person feels:</b><br/>"I am <u>bored</u> / <u>excited</u> / <u>worried</u> / <u>tired</u> / <u>amazed</u> / <u>annoyed</u>."</li>
+            <li>• <b>-ING = What a thing is like:</b><br/>"The trip is <u>boring</u> / <u>exciting</u> / <u>worrying</u> / <u>tiring</u> / <u>amazing</u>."</li>
+          </ul>
+        </div>
+        <div class="vocab-card">
+          <h4>💬 Asking & Suggesting (10d)</h4>
+          <ul>
+            <li>• "I'm interested in visiting..."</li>
+            <li>• "Do you know the opening times?"</li>
+            <li>• "Could you tell me the price?"</li>
+            <li>• "How often does the bus go?"</li>
+            <li>• "How about taking the bus?"</li>
+            <li>• "You could take a taxi."</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="text-align:right; margin-top:16px;">
+        <button type="button" class="btn-primary-submit" id="btnCloseVocab">Close Helper</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       RESTART CONFIRMATION MODAL (No browser alert/confirm used)
+       ======================================================================== -->
+  <div class="modal-backdrop" id="restartModal">
+    <div class="modal-box" style="max-width: 480px; text-align: center;">
+      <h2 class="modal-title">🔄 Restart Holiday Disaster?</h2>
+      <p style="font-size: 1.1rem; color: #475569; margin: 12px 0 22px;">
+        Would your class like to start a fresh holiday from the airport?
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button type="button" class="btn-secondary" id="btnCancelRestart">Keep Playing</button>
+        <button type="button" class="btn-primary-submit" style="background:#0284c7;" id="btnConfirmStandard">Standard Restart</button>
+        <button type="button" class="btn-primary-submit" id="btnConfirmSurprise">🎲 Surprise Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CUSTOM SVG SCENE ARTWORK FALLBACKS
+       Guarantees instant, colourful, comic illustrations even if offline or if an
+       external photograph is blocked on school Wi-Fi.
+       ========================================================================== */
+    function getSceneSvgIllustration(theme) {
+      const palettes = {
+        airport: { bg1: '#0284c7', bg2: '#38bdf8', icon: '🛫', label: 'INTERNATIONAL AIRPORT' },
+        passport: { bg1: '#7c3aed', bg2: '#a855f7', icon: '🛂', label: 'PASSPORT CONTROL' },
+        gate: { bg1: '#ea580c', bg2: '#f97316', icon: '🏃💨', label: 'DEPARTURE GATE B12' },
+        plane: { bg1: '#0369a1', bg2: '#0ea5e9', icon: '🛩️🐔', label: 'SIESTA AIRLINES FLIGHT' },
+        ferry: { bg1: '#1d4ed8', bg2: '#3b82f6', icon: '⛴️🚆', label: 'FERRY & NIGHT TRAIN' },
+        luggage: { bg1: '#b45309', bg2: '#f59e0b', icon: '🧳🥔', label: 'BAGGAGE CLAIM MYSTERY' },
+        taxi: { bg1: '#ca8a04', bg2: '#eab308', icon: '🚕🐄', label: 'CARLOS\'S SHORTCUT TAXI' },
+        hotel: { bg1: '#be123c', bg2: '#f43f5e', icon: '🏨💻', label: 'HOTEL SOL RECEPTION' },
+        camping: { bg1: '#15803d', bg2: '#22c55e', icon: '⛺🐐', label: 'COSTA DEL SOL CAMPSITE' },
+        beach: { bg1: '#0891b2', bg2: '#06b6d4', icon: '🏖️🐢', label: 'PLAYA DORADA BEACH' },
+        city: { bg1: '#9333ea', bg2: '#c084fc', icon: '🏰🗺️', label: 'OLD TOWN SIGHTSEEING' },
+        mountain: { bg1: '#047857', bg2: '#10b981', icon: '🚵‍♂️⛈️', label: 'SIERRA NEVADA MOUNTAINS' },
+        hospital: { bg1: '#e11d48', bg2: '#fb7185', icon: '🏥🥖', label: 'SPANISH CLINIC & CHURROS' },
+        restaurant: { bg1: '#c2410c', bg2: '#fb923c', icon: '🥘👨‍🍳', label: 'EL TORO LOCO TAPAS' },
+        ending: { bg1: '#4f46e5', bg2: '#818cf8', icon: '🏆🇪🇸', label: 'HOLIDAY FINALE' }
+      };
+      const p = palettes[theme] || palettes.airport;
+      return `
+        <svg viewBox="0 0 600 500" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad_${theme}" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="${p.bg1}" />
+              <stop offset="100%" stop-color="${p.bg2}" />
+            </linearGradient>
+          </defs>
+          <rect width="600" height="500" fill="url(#grad_${theme})" />
+          <circle cx="500" cy="90" r="65" fill="rgba(255,255,255,0.18)" />
+          <circle cx="90" cy="400" r="110" fill="rgba(255,255,255,0.1)" />
+          <path d="M0 390 Q 150 340 300 390 T 600 380 L 600 500 L 0 500 Z" fill="rgba(15,23,42,0.28)" />
+          <text x="300" y="235" font-size="95" text-anchor="middle" dominant-baseline="middle">${p.icon}</text>
+          <rect x="130" y="315" width="340" height="44" rx="22" fill="rgba(15,23,42,0.65)" />
+          <text x="300" y="343" font-family="sans-serif" font-size="18" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">${p.label}</text>
+        </svg>
+      `;
+    }
+
+    /* ==========================================================================
+       VERIFIED PHOTOGRAPH CATALOGUE (Wikimedia / Unsplash Public Licences)
+       ========================================================================== */
+    const PHOTOS = {
+      cover: {
+        url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Sean Oulashin / Unsplash',
+        theme: 'beach'
+      },
+      airport_desk: {
+        url: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Ashim D\'Silva / Unsplash',
+        theme: 'airport'
+      },
+      passport: {
+        url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: ConvertKit / Unsplash',
+        theme: 'passport'
+      },
+      airport_gate: {
+        url: 'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Ross Parmly / Unsplash',
+        theme: 'gate'
+      },
+      small_plane: {
+        url: 'https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Chris Leipelt / Unsplash',
+        theme: 'plane'
+      },
+      ferry_train: {
+        url: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Reiseuhu / Unsplash',
+        theme: 'ferry'
+      },
+      suitcases: {
+        url: 'https://images.unsplash.com/photo-1553531384-cc64ac80f931?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Erwan Hesry / Unsplash',
+        theme: 'luggage'
+      },
+      potatoes: {
+        url: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Rodrigo Dos Reis / Unsplash',
+        theme: 'luggage'
+      },
+      taxi_road: {
+        url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Unsplash Travel',
+        theme: 'taxi'
+      },
+      cow_road: {
+        url: 'https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Stijn te Strake / Unsplash',
+        theme: 'taxi'
+      },
+      hotel_desk: {
+        url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Fernando Alvarez / Unsplash',
+        theme: 'hotel'
+      },
+      camping_tent: {
+        url: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Scott Goodwill / Unsplash',
+        theme: 'camping'
+      },
+      spain_town: {
+        url: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Jorge Fernández / Unsplash',
+        theme: 'city'
+      },
+      beach_diving: {
+        url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Sebastian Pena / Unsplash',
+        theme: 'beach'
+      },
+      sightseeing: {
+        url: 'https://images.unsplash.com/photo-1511527661048-7fe73d85e9a4?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Dorian Mongel / Unsplash',
+        theme: 'city'
+      },
+      mountain_bike: {
+        url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Kalen Emsley / Unsplash',
+        theme: 'mountain'
+      },
+      hospital: {
+        url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Martha Dominguez / Unsplash',
+        theme: 'hospital'
+      },
+      tapas_food: {
+        url: 'https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=1000&q=80',
+        credit: 'Photo: Alex Haney / Unsplash',
+        theme: 'restaurant'
+      }
+    };
+
+    /* ==========================================================================
+       GAME STATE
+       ========================================================================== */
+    const state = {
+      currentSceneId: 'start',
+      currentPlayer: 1, // 1 to 5
+      money: 200,
+      happiness: 75,
+      disaster: 10,
+      surpriseMode: false,
+      surpriseSeed: 0,
+      isProcessing: false,
+      flags: {
+        hasPotatoSuitcase: false,
+        potatoReward: false,
+        helpedCarlos: false,
+        helpedElena: false,
+        helpedCount: 0,
+        stayedCampsite: false
+      },
+      pastPerfectLog: [],
+      builderSelection: []
+    };
+
+    function resetGameState(enableSurprise = false) {
+      state.currentSceneId = 's1_airport_checkin';
+      state.money = 200;
+      state.happiness = 75;
+      state.disaster = 10;
+      state.surpriseMode = enableSurprise;
+      state.surpriseSeed = enableSurprise ? Math.floor(Math.random() * 1000) + 1 : 0;
+      state.isProcessing = false;
+      state.flags = {
+        hasPotatoSuitcase: false,
+        potatoReward: false,
+        helpedCarlos: false,
+        helpedElena: false,
+        helpedCount: 0,
+        stayedCampsite: false
+      };
+      state.pastPerfectLog = [];
+      state.builderSelection = [];
+
+      const badge = document.getElementById('surpriseBadge');
+      if (enableSurprise) {
+        badge.classList.add('active');
+      } else {
+        badge.classList.remove('active');
+      }
+
+      updateResourceDisplay();
+      renderCurrentScene();
+    }
+
+    /* ==========================================================================
+       COMPLETE 22-SCENE BRANCHING STORY GRAPH (4 ACTS)
+       ========================================================================== */
+    const SCENES = {
+      /* ------------------------------------------------------------------------
+         ACT 1: THE JOURNEY (Scenes 1 - 6)
+         ------------------------------------------------------------------------ */
+      s1_airport_checkin: {
+        id: 's1_airport_checkin',
+        act: 'Act 1: The Journey',
+        location: '🛫 Airport Check-In Desk',
+        title: '1. Where Is Your Passport?!',
+        photo: PHOTOS.airport_desk,
+        character: {
+          avatar: '👩‍✈️',
+          name: 'Airport Agent Sofia',
+          quote: 'Good morning! Can I see your passport and ticket to Spain, please?'
+        },
+        getDescription: () => {
+          const twist = state.surpriseMode
+            ? 'Also, a small dog is sitting on your suitcase!'
+            : 'The queue behind you is very long!';
+          return `You <span class="colloc">get twenty days' holiday a year</span>, and today you <span class="colloc">go abroad</span> to sunny Spain! You go to <span class="colloc">check in at the airport</span>, but your jacket pocket is empty! Did you <span class="colloc">lose a passport</span>? ${twist}`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: 'Open all your bags on the floor and search carefully.',
+            cost: 0,
+            deltas: { money: 0, happiness: -5, disaster: +10 },
+            outcomeTitle: 'SOCKS EVERYWHERE!',
+            outcomeText: 'Everyone looks at your colourful holiday socks on the floor, but you find a small blue bag inside your backpack!',
+            pastPerfectNote: 'When you arrived at the airport, you had put your passport in a different bag.',
+            nextScene: 's2_passport_panic'
+          },
+          {
+            text: 'Pay €15 for "VIP Fast Bag Search" at the help desk.',
+            cost: 15,
+            deltas: { money: -15, happiness: +5, disaster: 0 },
+            outcomeTitle: 'VIP SERVICE!',
+            outcomeText: 'The friendly helper finds your passport inside your Spanish phrasebook in ten seconds!',
+            pastPerfectNote: 'You were worried because you had hidden your passport inside a book.',
+            nextScene: 's2_passport_panic'
+          },
+          {
+            text: 'Phone your neighbour to check your kitchen table at home.',
+            cost: 0,
+            deltas: { money: 0, happiness: -10, disaster: +15 },
+            outcomeTitle: 'TEN MINUTES LATER...',
+            outcomeText: 'Your neighbour says it is not at home! Then you look in your small bag—it was there the whole time!',
+            pastPerfectNote: 'Before you phoned home, you had already packed your passport in your small bag.',
+            nextScene: 's2_passport_panic'
+          }
+        ]
+      },
+
+      s2_passport_panic: {
+        id: 's2_passport_panic',
+        act: 'Act 1: The Journey',
+        location: '🛂 Security & Passport Control',
+        title: '2. The Mystery of the Small Bag',
+        photo: PHOTOS.passport,
+        character: {
+          avatar: '😅',
+          name: 'Your Travel Partner',
+          quote: 'Phew! You didn\'t lose it! You put it in your small bag yesterday!'
+        },
+        getDescription: () => {
+          return `You show your passport to the officer. Why was it in your small bag? Because last night, before you went to sleep, you put it there! Now you must hurry to <span class="colloc">get on a plane</span>.`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Complete the sentence with the Past Perfect (had + past participle):',
+          sentenceHtml: '"I was worried at the desk because I <span class="blank-slot">______</span> my passport in a different bag!"',
+          hint: 'Look at the timeline: Packing the bag happened FIRST (last night), before you arrived at the airport today. Use "had packed" (\'d packed).',
+          timeline: {
+            first: '1st (Last Night): Packed passport in small bag',
+            second: '2nd (This Morning): Arrived at the airport'
+          },
+          options: [
+            { text: "had packed ('d packed)", isCorrect: true },
+            { text: 'pack', isCorrect: false },
+            { text: 'am packing', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'EXCELLENT GRAMMAR!',
+            text: 'Correct! Packing the passport happened BEFORE you arrived at the airport, so we use the Past Perfect.',
+            completedSentence: 'I was worried because I\'d packed my passport in a different bag!',
+            deltas: { money: 0, happiness: +10, disaster: -5 }
+          },
+          incorrectFeedback: {
+            title: 'NOT QUITE!',
+            text: 'Remember: packing the bag happened FIRST (before you arrived at the airport), so we use "had packed" (\'d packed).',
+            completedSentence: 'I was worried because I\'d packed my passport in a different bag!',
+            deltas: { money: 0, happiness: -5, disaster: +10 }
+          },
+          nextScene: 's3_gate_sprint'
+        }
+      },
+
+      s3_gate_sprint: {
+        id: 's3_gate_sprint',
+        act: 'Act 1: The Journey',
+        location: '🏃 Departure Gate B12',
+        title: '3. Run to Gate B12!',
+        photo: PHOTOS.airport_gate,
+        character: {
+          avatar: '👨‍✈️',
+          name: 'Gate Officer Marco',
+          quote: 'Flight 104 to Malaga closed at 10:00! Look at the clock—it is 10:25!'
+        },
+        getDescription: () => {
+          return `You run through the <span class="colloc">airport</span> with your heavy bags. Your <span class="colloc">flight</span> was at 10:00. You arrive at Gate B12 at 10:25. Oh no! Did you <span class="colloc">miss a plane</span>?`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Read this sentence carefully: "When we arrived at the gate, the plane had left." — Which action happened FIRST?',
+          sentenceHtml: '"When we <u>arrived</u> at 10:25, the plane <span class="grammar-highlight">had left</span> at 10:00."',
+          hint: '"had left" is Past Perfect. The Past Perfect always shows the EARLIER action (10:00 is before 10:25!).',
+          timeline: {
+            first: '10:00 AM: The plane had left',
+            second: '10:25 AM: We arrived at the gate'
+          },
+          options: [
+            { text: 'The plane left first (at 10:00).', isCorrect: true },
+            { text: 'We arrived at the gate first (at 10:25).', isCorrect: false },
+            { text: 'Both happened at the exact same time.', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'SPOT ON!',
+            text: 'Yes! The plane left at 10:00, and you arrived at 10:25. "Had left" tells us the plane left first!',
+            completedSentence: 'When we arrived at the gate, the plane had left.',
+            deltas: { money: 0, happiness: +5, disaster: +5 }
+          },
+          incorrectFeedback: {
+            title: 'LOOK AT THE CLOCK!',
+            text: '10:00 is earlier than 10:25! "The plane had left" happened first, before you arrived.',
+            completedSentence: 'When we arrived at the gate, the plane had left.',
+            deltas: { money: 0, happiness: -5, disaster: +15 }
+          },
+          pastPerfectNote: 'When you arrived at Gate B12, your first plane had already left.',
+          nextScene: 's4_flight_options'
+        }
+      },
+
+      s4_flight_options: {
+        id: 's4_flight_options',
+        act: 'Act 1: The Journey',
+        location: '🎫 Ticket Transfer Desk',
+        title: '4. How Will You Get to Spain?',
+        photo: PHOTOS.airport_desk,
+        character: {
+          avatar: '👩‍💼',
+          name: 'Ticket Agent Lucia',
+          quote: 'Don\'t cry! You missed your flight, but there are two other ways to reach Spain today!'
+        },
+        getDescription: () => {
+          return `Because you <span class="colloc">missed a connecting flight</span>, you need a new plan! You can <span class="colloc">book a flight</span> on a very cheap airline, or you can <span class="colloc">book a ticket</span> for the express <span class="colloc">ferry</span> and night <span class="colloc">train</span>.`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: 'Book a flight on "Siesta Budget Airlines" for €45.',
+            cost: 45,
+            deltas: { money: -45, happiness: +5, disaster: +15 },
+            outcomeTitle: 'WELCOME TO SIESTA AIRLINES!',
+            outcomeText: 'You pay €45 and run to Gate C99. The plane is tiny, yellow, and has one noisy propeller!',
+            nextScene: 's5_budget_plane'
+          },
+          {
+            text: 'Book a ticket for the sea ferry and night train for €25.',
+            cost: 25,
+            deltas: { money: -25, happiness: +5, disaster: +10 },
+            outcomeTitle: 'ALL ABOARD THE FERRY!',
+            outcomeText: 'You save €20 and board a giant ferry boat followed by a classic Spanish night train!',
+            nextScene: 's6_ferry_train'
+          },
+          {
+            text: 'Complain loudly until the manager gives you a free seat on Siesta Airlines!',
+            cost: 0,
+            deltas: { money: 0, happiness: -10, disaster: +25 },
+            outcomeTitle: 'FREE TICKET... NEXT TO A CHICKEN!',
+            outcomeText: 'You save €45, but the manager puts you in Seat 13B on Siesta Airlines—right next to a farmer\'s basket!',
+            nextScene: 's5_budget_plane'
+          }
+        ]
+      },
+
+      s5_budget_plane: {
+        id: 's5_budget_plane',
+        act: 'Act 1: The Journey',
+        location: '🛩️ Siesta Airlines Flight 999',
+        title: '5. The Chicken in Seat 13A',
+        photo: PHOTOS.small_plane,
+        character: {
+          avatar: '🐔',
+          name: 'Señorita Pepita (The Chicken)',
+          quote: 'Bawk! Bawk! (Welcome aboard this very bumpy flight!)'
+        },
+        getDescription: () => {
+          const twist = state.surpriseMode
+            ? 'The pilot plays loud flamenco guitar on the microphone!'
+            : 'A white chicken in Seat 13A is eating your peanuts!';
+          return `You <span class="colloc">get on a plane</span>. The tiny <span class="colloc">plane</span> shakes in the wind. ${twist} The man next to you closes his eyes and screams!`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Choose the correct -ED and -ING adjectives (Remember: -ED = how a person feels, -ING = what a thing is like):',
+          sentenceHtml: '"The passenger is very <span class="blank-slot">______</span> because this bumpy flight is <span class="blank-slot">______</span>!"',
+          hint: 'A person feels -ED (frightened). The flight is -ING (frightening).',
+          options: [
+            { text: 'frightened / frightening', isCorrect: true },
+            { text: 'frightening / frightened', isCorrect: false },
+            { text: 'frighten / frightens', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'FANTASTIC ADJECTIVES!',
+            text: 'Correct! The man feels "frightened" (-ed), and the bumpy flight is "frightening" (-ing)!',
+            completedSentence: 'The passenger is very frightened because this bumpy flight is frightening!',
+            deltas: { money: 0, happiness: +10, disaster: 0 }
+          },
+          incorrectFeedback: {
+            title: 'REMEMBER THE RULE!',
+            text: 'People feel -ED ("He is frightened"). Things are -ING ("The flight is frightening").',
+            completedSentence: 'The passenger is very frightened because this bumpy flight is frightening!',
+            deltas: { money: 0, happiness: -5, disaster: +10 }
+          },
+          nextScene: 's7_baggage_claim'
+        }
+      },
+
+      s6_ferry_train: {
+        id: 's6_ferry_train',
+        act: 'Act 1: The Journey',
+        location: '⛴️ Ferry & Spanish Night Train',
+        title: '6. Mystery Cheese on the Night Train',
+        photo: PHOTOS.ferry_train,
+        character: {
+          avatar: '🎸',
+          name: 'Diego the Backpacker',
+          quote: 'Hola amigos! This train journey is six hours long. Would you like some of my grandfather\'s strong cheese?'
+        },
+        getDescription: () => {
+          return `After a windy <span class="colloc">ferry</span> ride, you get on the night <span class="colloc">train</span> to Spain. There are no beds left! What do you do during the long trip?`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: 'Book a restaurant table in the train dining car for €20.',
+            cost: 20,
+            deltas: { money: -20, happiness: +15, disaster: -5 },
+            outcomeTitle: 'DELICIOUS PAELLA ON WHEELS!',
+            outcomeText: 'You book a restaurant table on the train and enjoy warm food and Spanish music!',
+            pastPerfectNote: 'You enjoyed the train ride because you had booked a restaurant table in the dining car.',
+            nextScene: 's7_baggage_claim'
+          },
+          {
+            text: 'Eat Diego\'s free mystery cheese and sing songs.',
+            cost: 0,
+            deltas: { money: 0, happiness: +10, disaster: +15 },
+            outcomeTitle: 'SMELLY BUT FUN!',
+            outcomeText: 'The cheese smells like old boots, so the whole carriage opens the windows—but you make a great friend!',
+             flagSet: 'helpedCount',
+            nextScene: 's7_baggage_claim'
+          },
+          {
+            text: 'Try to sleep on the floor next to the suitcases.',
+            cost: 0,
+            deltas: { money: 0, happiness: -15, disaster: +10 },
+            outcomeTitle: 'A VERY TIRING NIGHT!',
+            outcomeText: 'You are very tired because sleeping on the floor was tiring and cold!',
+            nextScene: 's7_baggage_claim'
+          }
+        ]
+      },
+
+      /* ------------------------------------------------------------------------
+         ACT 2: ARRIVAL IN SPAIN (Scenes 7 - 12)
+         ------------------------------------------------------------------------ */
+      s7_baggage_claim: {
+        id: 's7_baggage_claim',
+        act: 'Act 2: Arrival in Spain',
+        location: '🧳 Malaga Baggage Hall',
+        title: '7. Twenty Kilos of Potatoes!',
+        photo: PHOTOS.potatoes,
+        character: {
+          avatar: '👮‍♂️',
+          name: 'Baggage Officer Ramon',
+          quote: 'Madre mía! Your normal clothes are gone, and this red suitcase is full of giant Spanish potatoes!'
+        },
+        getDescription: () => {
+          return `Welcome to Spain! You wait for your bags, but you <span class="colloc">lose luggage</span>! Only one red suitcase is left. You open it: someone <span class="grammar-highlight">had filled</span> it with 20 kilos of prize potatoes! You want to ask Officer Ramon about the person who took your bag.`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Subject Question Mystery! Which question correctly asks about the person who took your suitcase?',
+          sentenceHtml: 'You ask Officer Ramon: "<span class="blank-slot">________________________</span>"',
+          hint: 'When "Who" is the subject of the question, we do NOT use "did". Say: "Who took my suitcase?"',
+          options: [
+            { text: 'Who took my suitcase?', isCorrect: true },
+            { text: 'Who did take my suitcase?', isCorrect: false },
+            { text: 'Where took my suitcase?', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'PERFECT SUBJECT QUESTION!',
+            text: 'Correct! "Who took my suitcase?" needs no "did" because "Who" is the person doing the action!',
+            completedSentence: 'Who took my suitcase?',
+            deltas: { money: 0, happiness: +10, disaster: 0 }
+          },
+          incorrectFeedback: {
+            title: 'GOOD TRY!',
+            text: 'In English subject questions with "Who", we don\'t use "did". We simply say: "Who took my suitcase?"',
+            completedSentence: 'Who took my suitcase?',
+            deltas: { money: 0, happiness: -5, disaster: +10 }
+          },
+          pastPerfectNote: 'When you opened the suitcase in Spain, someone had filled it with potatoes!',
+          nextScene: 's8_suitcase_decision'
+        }
+      },
+
+      s8_suitcase_decision: {
+        id: 's8_suitcase_decision',
+        act: 'Act 2: Arrival in Spain',
+        location: '🥔 Lost Luggage Counter',
+        title: '8. What Do You Do With the Potatoes?',
+        photo: PHOTOS.suitcases,
+        character: {
+          avatar: '👮‍♂️',
+          name: 'Baggage Officer Ramon',
+          quote: 'Look! There is a gold sticker on these potatoes: "Property of Chef Fernando — Golden Truffle Potatoes!"'
+        },
+        getDescription: () => {
+          return `You have no holiday clothes because you <span class="colloc">lost your luggage</span>. The red suitcase with the Golden Potatoes is sitting in front of you. What is your group's plan?`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: 'Take the heavy Potato Suitcase with you! Maybe the owner will give you a reward.',
+            cost: 0,
+            deltas: { money: 0, happiness: +5, disaster: +15 },
+            flagSet: 'hasPotatoSuitcase',
+            outcomeTitle: 'YOU ARE CARRYING 20 KILOS OF POTATOES!',
+            outcomeText: 'Your back hurts, and people stare at you, but you now carry the mysterious Golden Potatoes of Spain!',
+            pastPerfectNote: 'You kept the mystery suitcase after someone had taken your real luggage.',
+            nextScene: 's9_transport_hub'
+          },
+          {
+            text: 'Leave the potatoes and buy beach shorts, sunglasses, and a huge sombrero for €25.',
+            cost: 25,
+            deltas: { money: -25, happiness: +15, disaster: -5 },
+            outcomeTitle: 'STYLISH TOURISTS!',
+            outcomeText: 'You look like famous movie stars in your giant sombreros and bright yellow flip-flops!',
+            nextScene: 's9_transport_hub'
+          },
+          {
+            text: 'Wear your winter coat in 35°C sunny Spain to save money.',
+            cost: 0,
+            deltas: { money: 0, happiness: -15, disaster: +15 },
+            outcomeTitle: 'SO HOT!',
+            outcomeText: 'You save money, but you are sweating like an ice cream in the sun!',
+            nextScene: 's9_transport_hub'
+          }
+        ]
+      },
+
+      s9_transport_hub: {
+        id: 's9_transport_hub',
+        act: 'Act 2: Arrival in Spain',
+        location: '🚌 Airport Bus & Taxi Stand',
+        title: '9. Bus or Taxi to the Hotel?',
+        photo: PHOTOS.taxi_road,
+        character: {
+          avatar: '🚕',
+          name: 'Carlos (The Unlucky Taxi Driver)',
+          quote: 'Hola! My taxi door is held on with yellow tape, and my GPS is from 1998, but I am very fast!'
+        },
+        getDescription: () => {
+          return `You walk outside into the warm Spanish sun. You see a <span class="colloc">bus</span> stop and **Carlos**, a smiling taxi driver. Before you choose, you ask the Tourist Information desk about the <span class="colloc">bus</span>.`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Functional Language (Asking for Information): Which question politely asks about the bus schedule?',
+          sentenceHtml: 'You ask the clerk: "<span class="blank-slot">____________________________________</span>"',
+          hint: 'Look for the polite Unit 10d phrases: "Is there any public transport? How often does the bus go?"',
+          options: [
+            { text: 'Is there any public transport? How often does the bus go?', isCorrect: true },
+            { text: 'Say me bus time now please!', isCorrect: false },
+            { text: 'How many money is the bus yesterday?', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'VERY POLITE!',
+            text: 'The clerk smiles: "The bus goes every two hours, or you could take Carlos\'s taxi right now for €15!"',
+            completedSentence: 'Is there any public transport? How often does the bus go?',
+            deltas: { money: 0, happiness: +10, disaster: -5 }
+          },
+          incorrectFeedback: {
+            title: 'LET\'S BE MORE POLITE!',
+            text: 'In English, a natural way to ask is: "Is there any public transport? How often does the bus go?"',
+            completedSentence: 'Is there any public transport? How often does the bus go?',
+            deltas: { money: 0, happiness: -5, disaster: +10 }
+          },
+          nextScene: 's10_carlos_shortcut'
+        }
+      },
+
+      s10_carlos_shortcut: {
+        id: 's10_carlos_shortcut',
+        act: 'Act 2: Arrival in Spain',
+        location: '🐄 Country Road Outside Malaga',
+        title: '10. The Same Cow Three Times!',
+        photo: PHOTOS.cow_road,
+        character: {
+          avatar: '🚕',
+          name: 'Carlos the Taxi Driver',
+          quote: 'Don\'t worry, amigos! I know a secret shortcut! Wait... why is that brown cow waving at us again?'
+        },
+        getDescription: () => {
+          const twist = state.surpriseMode
+            ? 'A family of goats is standing on the roof of the car in front of you!'
+            : 'Two hours later, you see the exact same brown cow for the third time!';
+          return `The airport <span class="colloc">bus</span> had already left, so you got into Carlos's taxi for €15. Carlos says he knows a shortcut, but you <span class="colloc">get lost</span> in the countryside! ${twist}`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: 'Use your phone map to kindly help Carlos find the road to the hotel.',
+            cost: 15,
+            deltas: { money: -15, happiness: +15, disaster: -10 },
+            flagSet: 'helpedCarlos',
+            outcomeTitle: 'CARLOS IS YOUR BEST FRIEND!',
+            outcomeText: 'Carlos cries happy tears: "Thank you! You saved my taxi! Call me later if you ever need a free ride!"',
+            pastPerfectNote: 'You helped Carlos after he had got lost three times on the country road.',
+            nextScene: 's11_hotel_reception'
+          },
+          {
+            text: 'Refuse to pay the €15 because you are annoyed by this annoying journey!',
+            cost: 0,
+            deltas: { money: 0, happiness: -10, disaster: +20 },
+            outcomeTitle: 'CARLOS DRIVES OVER A BUMP!',
+            outcomeText: 'You save €15, but Carlos drops you in a muddy puddle two blocks from the hotel!',
+            nextScene: 's11_hotel_reception'
+          },
+          {
+            text: 'Stop to take funny selfies with the brown cow.',
+            cost: 15,
+            deltas: { money: -15, happiness: +15, disaster: +15 },
+            outcomeTitle: 'FAMOUS COW SELFIES!',
+            outcomeText: 'The cow licks your camera! Everyone laughs, even though you arrive at the hotel very late.',
+            nextScene: 's11_hotel_reception'
+          }
+        ]
+      },
+
+      s11_hotel_reception: {
+        id: 's11_hotel_reception',
+        act: 'Act 2: Arrival in Spain',
+        location: '🏨 Hotel Sol Reception Desk',
+        title: '11. Elena\'s Exploding Computer!',
+        photo: PHOTOS.hotel_desk,
+        character: {
+          avatar: '💁‍♀️',
+          name: 'Elena (The Super-Cheerful Receptionist)',
+          quote: 'Welcome to Hotel Sol! Of course we have your booking! Oh... POOF! My computer just caught fire!'
+        },
+        getDescription: () => {
+          return `You want to <span class="colloc">stay at a hotel</span>, so you <span class="colloc">check in at the reception desk</span>. **Elena** smiles brightly, even while smoke comes out of her computer! You have <span class="colloc">hotel problems</span>—someone <span class="colloc">lost a reservation</span>!`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Explain to Elena what happened BEFORE you arrived (Past Perfect: had + past participle):',
+          sentenceHtml: '"We have the email! We <span class="blank-slot">______</span> a hotel room two months before we arrived!"',
+          hint: 'Booking the hotel room happened TWO MONTHS AGO (before you arrived today). Use "had booked".',
+          timeline: {
+            first: '1st (Two Months Ago): We had booked a room',
+            second: '2nd (Today): We arrived at the reception desk'
+          },
+          options: [
+            { text: 'had booked', isCorrect: true },
+            { text: 'have book', isCorrect: false },
+            { text: 'booking', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'ELENA BELIEVES YOU!',
+            text: 'Elena claps her hands: "Wonderful English! You had booked a room! Let me give you a €15 discount!"',
+            completedSentence: 'We had booked a hotel room two months before we arrived!',
+            deltas: { money: +15, happiness: +10, disaster: -5 }
+          },
+          incorrectFeedback: {
+            title: 'ALMOST!',
+            text: 'Because you booked the room BEFORE you arrived, we use "had booked". Elena still smiles and tries to help!',
+            completedSentence: 'We had booked a hotel room two months before we arrived!',
+            deltas: { money: 0, happiness: -5, disaster: +15 }
+          },
+          pastPerfectNote: 'When you arrived at Hotel Sol, Elena\'s computer had broken and lost your reservation.',
+          nextScene: 's12_accommodation_choice'
+        }
+      },
+
+      s12_accommodation_choice: {
+        id: 's12_accommodation_choice',
+        act: 'Act 2: Arrival in Spain',
+        location: '🛏️ Finding a Bed for the Night',
+        title: '12. The "Sea View" Painting',
+        photo: PHOTOS.camping_tent,
+        character: {
+          avatar: '💁‍♀️',
+          name: 'Elena the Receptionist',
+          quote: 'Good news! We have one room left with a sea view! Well... the sea is in a painting on the wall!'
+        },
+        getDescription: () => {
+          return `Elena offers you the noisy basement room with a tiny painting of the sea for €40. Or you can try a local <span class="colloc">bed and breakfast</span>, or <span class="colloc">stay on a campsite</span> in a <span class="colloc">tent</span> or old <span class="colloc">caravan</span>!`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: 'Stay at the hotel in Elena\'s "Sea Painting" room for €40 (and cheer Elena up!).',
+            cost: 40,
+            deltas: { money: -40, happiness: +10, disaster: +5 },
+            flagSet: 'helpedElena',
+            outcomeTitle: 'THE PAINTING IS CROOKED, BUT THE BED IS SOFT!',
+            outcomeText: 'Elena is so happy you stayed that she brings you free hot chocolate at midnight!',
+            nextScene: 's13_morning_plan'
+          },
+          {
+            text: 'Go to Señora Rosa\'s cosy Bed and Breakfast down the street for €30.',
+            cost: 30,
+            deltas: { money: -30, happiness: +15, disaster: -5 },
+            outcomeTitle: 'A LOVELY BED AND BREAKFAST!',
+            outcomeText: 'Señora Rosa gives you comfortable beds and fresh Spanish oranges for breakfast!',
+            nextScene: 's13_morning_plan'
+          },
+          {
+            text: 'Save money! Stay on a campsite in a cheap tent and caravan for €10.',
+            cost: 10,
+            deltas: { money: -10, happiness: -10, disaster: +20 },
+            flagSet: 'stayedCampsite',
+            outcomeTitle: 'A GOAT ATE YOUR TENT ZIPPER!',
+            outcomeText: 'You only spend €10, but at 3:00 AM a friendly campsite goat puts its head inside your tent!',
+            pastPerfectNote: 'You woke up at 3:00 AM because a goat had walked into your tent on the campsite.',
+            nextScene: 's13_morning_plan'
+          }
+        ]
+      },
+
+      /* ------------------------------------------------------------------------
+         ACT 3: THE HOLIDAY ACTIVITIES (Scenes 13 - 18)
+         ------------------------------------------------------------------------ */
+      s13_morning_plan: {
+        id: 's13_morning_plan',
+        act: 'Act 3: The Holiday',
+        location: '☀️ Sunny Plaza Mayor',
+        title: '13. How Will You Spend Your Holiday?',
+        photo: PHOTOS.spain_town,
+        character: {
+          avatar: '🌞',
+          name: 'Holiday Guide Map',
+          quote: 'It is a bright, sunny day in Spain! Discuss together: which adventure does your class want?'
+        },
+        getDescription: () => {
+          return `It is Day 2 of your trip! You have three exciting choices today: you can go to the beach for <span class="colloc">diving</span>, <span class="colloc">go sightseeing</span> in the historic city, or <span class="colloc">go hiking</span> and <span class="colloc">cycling</span> in the mountains!`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: '🏖️ BEACH & DIVING: Go to Playa Dorada to swim and go diving (€15).',
+            cost: 15,
+            deltas: { money: -15, happiness: +15, disaster: +5 },
+            outcomeTitle: 'OFF TO THE BEACH!',
+            outcomeText: 'You pack your towels and run into the warm Mediterranean sea!',
+            nextScene: 's14_beach_diving'
+          },
+          {
+            text: '🏰 CITY SIGHTSEEING: Go sightseeing and go on a tour of the castle (€15).',
+            cost: 15,
+            deltas: { money: -15, happiness: +10, disaster: +5 },
+            outcomeTitle: 'OFF TO THE HISTORIC OLD TOWN!',
+            outcomeText: 'You grab your cameras to explore the famous Spanish castle and plazas!',
+            nextScene: 's15_city_sightseeing'
+          },
+          {
+            text: '🚵 MOUNTAIN ADVENTURE: Go hiking and go cycling in the mountains (€10).',
+            cost: 10,
+            deltas: { money: -10, happiness: +10, disaster: +15 },
+            outcomeTitle: 'INTO THE MOUNTAINS!',
+            outcomeText: 'You rent mountain bikes and head up the steep, dramatic mountain trail!',
+            nextScene: 's16_mountain_hiking'
+          }
+        ]
+      },
+
+      s14_beach_diving: {
+        id: 's14_beach_diving',
+        act: 'Act 3: The Holiday (Beach Route)',
+        location: '🏖️ Playa Dorada Beach',
+        title: '14. Lobster Sunburn & Diving Turtles!',
+        photo: PHOTOS.beach_diving,
+        character: {
+          avatar: '🐢',
+          name: 'Captain Mateo (Diving Instructor)',
+          quote: 'Put on your mask! Under the water, the fish are dancing—and try not to get sunburned!'
+        },
+        getDescription: () => {
+          const twist = state.surpriseMode
+            ? 'A seagull steals your ice cream, but drops a €10 note on your towel!'
+            : 'Under the water, you see a giant sea turtle wearing lost pink sunglasses!';
+          return `You forget to put on suncream and <span class="colloc">get sunburned</span>—your nose is bright red! Then you try <span class="colloc">diving</span> in the clear blue sea. ${twist}`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Choose the right -ED and -ING adjectives to describe your diving adventure:',
+          sentenceHtml: '"We were <span class="blank-slot">______</span> because the underwater diving tour was <span class="blank-slot">______</span>!"',
+          hint: 'How YOU feel = -ED ("We were amazed"). What the TOUR was like = -ING ("The tour was amazing").',
+          options: [
+            { text: 'amazed / amazing', isCorrect: true },
+            { text: 'amazing / amazed', isCorrect: false },
+            { text: 'bored / boring', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'AMAZING ENGLISH!',
+            text: 'Yes! You felt "amazed" (-ed) because the diving trip was "amazing" (-ing)!',
+            completedSentence: 'We were amazed because the underwater diving tour was amazing!',
+            deltas: { money: state.surpriseMode ? 10 : 0, happiness: +15, disaster: 0 }
+          },
+          incorrectFeedback: {
+            title: 'WATCH THE ENDINGS!',
+            text: 'Remember: "We were amazed" (-ed = how we feel) and "The tour was amazing" (-ing = what the tour was like).',
+            completedSentence: 'We were amazed because the underwater diving tour was amazing!',
+            deltas: { money: 0, happiness: +5, disaster: +10 }
+          },
+          pastPerfectNote: 'You got sunburned at the beach because you had forgotten to put on suncream.',
+          nextScene: 's17_hospital_comedy'
+        }
+      },
+
+      s15_city_sightseeing: {
+        id: 's15_city_sightseeing',
+        act: 'Act 3: The Holiday (City Route)',
+        location: '🏰 Picasso Castle & Old Town',
+        title: '15. Pedro the Lost Tour Guide',
+        photo: PHOTOS.sightseeing,
+        character: {
+          avatar: '🗺️',
+          name: 'Pedro (Your New Tour Guide)',
+          quote: 'Confession time: today is my first day as a tour guide, and my map is upside down!'
+        },
+        getDescription: () => {
+          return `You <span class="colloc">go sightseeing</span> and <span class="colloc">hire a tour guide</span> named Pedro. After twenty minutes, Pedro admits he is lost! Luckily, you arrive at the famous Picasso Castle ticket window and ask for information.`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Functional Language (Unit 10d): Choose the best way to ask the castle staff for opening times and price:',
+          sentenceHtml: 'You say: "I\'m interested in visiting the castle. <span class="blank-slot">____________________________________</span>"',
+          hint: 'Look for polite indirect/direct questions from Unit 10d: "Do you know the opening times? Could you tell me the price?"',
+          options: [
+            { text: 'Do you know the opening times? Could you tell me the price?', isCorrect: true },
+            { text: 'What hour open castle and how euros give you?', isCorrect: false },
+            { text: 'Are there any buses in my suitcase?', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'FREE VIP CASTLE ENTRY!',
+            text: 'The ticket manager is so impressed with your polite English that she lets your whole group in for free!',
+            completedSentence: 'I\'m interested in visiting the castle. Do you know the opening times? Could you tell me the price?',
+            deltas: { money: +10, happiness: +15, disaster: -5 }
+          },
+          incorrectFeedback: {
+            title: 'LET\'S USE UNIT 10 PHRASES!',
+            text: 'Say: "Do you know the opening times? Could you tell me the price?"',
+            completedSentence: 'I\'m interested in visiting the castle. Do you know the opening times? Could you tell me the price?',
+            deltas: { money: 0, happiness: 0, disaster: +10 }
+          },
+          pastPerfectNote: 'You got lost in the Old Town because your tour guide had held his map upside down.',
+          nextScene: 's17_hospital_comedy'
+        }
+      },
+
+      s16_mountain_hiking: {
+        id: 's16_mountain_hiking',
+        act: 'Act 3: The Holiday (Mountain Route)',
+        location: '⛰️ Sierra Nevada Mountain Trail',
+        title: '16. Skis on the Grass & Bad Weather!',
+        photo: PHOTOS.mountain_bike,
+        character: {
+          avatar: '🎿',
+          name: 'Crazy Mountain Shopkeeper',
+          quote: 'There is no snow today, amigos, but would you like to hire skis anyway? Oh look—a storm!'
+        },
+        getDescription: () => {
+          return `You <span class="colloc">go hiking</span> and <span class="colloc">go cycling</span> up the mountain (and refuse to <span class="colloc">hire skis</span> on the green grass!). Suddenly, <span class="colloc">bad weather</span> arrives—heavy rain and wind! Why are you completely wet?`;
+        },
+        type: 'challenge_builder',
+        challenge: {
+          instruction: 'Click the word blocks in the correct order to build a Past Perfect sentence:',
+          hint: 'Start with "When the rain started," -> then subject "we" -> then Past Perfect negative "hadn\'t brought" -> "our coats."',
+          timeline: {
+            first: '1st (Earlier): We hadn\'t brought our coats',
+            second: '2nd (Later): The rain started in the mountains'
+          },
+          blocks: ['we', 'When the rain started,', 'our coats.', "hadn't brought"],
+          correctOrder: ['When the rain started,', 'we', "hadn't brought", 'our coats.'],
+          correctFeedback: {
+            title: 'BRILLIANT SENTENCE BUILDING!',
+            text: 'Perfect! "When the rain started, we hadn\'t brought our coats."',
+            completedSentence: "When the rain started, we hadn't brought our coats.",
+            deltas: { money: 0, happiness: +15, disaster: 0 }
+          },
+          incorrectFeedback: {
+            title: 'HERE IS THE CORRECT ORDER!',
+            text: 'We say: "When the rain started, we hadn\'t brought our coats."',
+            completedSentence: "When the rain started, we hadn't brought our coats.",
+            deltas: { money: 0, happiness: -5, disaster: +15 }
+          },
+          pastPerfectNote: 'You got wet in the mountains because you hadn\'t brought raincoats.',
+          nextScene: 's17_hospital_comedy'
+        }
+      },
+
+      s17_hospital_comedy: {
+        id: 's17_hospital_comedy',
+        act: 'Act 3: The Holiday',
+        location: '🏥 Clínica Costa del Sol',
+        title: '17. The Pink Bandage & Free Churros!',
+        photo: PHOTOS.hospital,
+        character: {
+          avatar: '👨‍⚕️',
+          name: 'Doctor Alejandro',
+          quote: 'Don\'t worry! Your foot is fine! Here is a giant bright pink bandage and a plate of warm chocolate churros!'
+        },
+        getDescription: () => {
+          return `On the way back from your activity, you slip on a banana skin, <span class="colloc">have an accident</span>, and <span class="colloc">go to hospital</span>! Luckily, it is not serious at all. In the waiting room, another tourist looks very <span class="grammar-highlight">worried</span> because he doesn't speak Spanish.`;
+        },
+        type: 'story',
+        choices: [
+          {
+            text: 'Help the worried tourist and suggest: "How about taking the bus back to town together?"',
+            cost: 0,
+            deltas: { money: +20, happiness: +15, disaster: -10 },
+            flagSet: 'helpedCount',
+            outcomeTitle: 'THE TOURIST GIVES YOU €20 FOR HELPING!',
+            outcomeText: 'You help translate for the worried tourist! He is so grateful he insists on giving your group €20 for dinner!',
+            nextScene: 's18_tapas_disaster'
+          },
+          {
+            text: 'Buy a deluxe gold walking stick and miracle sunburn cream for €25.',
+            cost: 25,
+            deltas: { money: -25, happiness: +10, disaster: -5 },
+            outcomeTitle: 'FANCY WALKING STICK!',
+            outcomeText: 'You walk out of the hospital looking like a royal duke with a giant pink bandage!',
+            nextScene: 's18_tapas_disaster'
+          },
+          {
+            text: 'Eat five plates of Doctor Alejandro\'s free hospital churros and leave quickly.',
+            cost: 0,
+            deltas: { money: 0, happiness: +10, disaster: +10 },
+            outcomeTitle: 'SO MUCH CHOCOLATE!',
+            outcomeText: 'Your stomach is full of churros, and you hop out of the hospital on one foot!',
+            nextScene: 's18_tapas_disaster'
+          }
+        ]
+      },
+
+      s18_tapas_disaster: {
+        id: 's18_tapas_disaster',
+        act: 'Act 3: The Holiday',
+        location: '🥘 "El Toro Loco" Tapas Restaurant',
+        title: '18. Who Took Our Restaurant Table?!',
+        photo: PHOTOS.tapas_food,
+        character: {
+          avatar: '💁‍♂️',
+          name: 'Waiter Manolo',
+          quote: 'I am so sorry! You arrived at 9:00 PM, so I gave your table to that taxi driver and hotel receptionist over there!'
+        },
+        getDescription: () => {
+          return `Everyone is hungry after a <span class="grammar-highlight">tiring</span> day. You arrive at "El Toro Loco" where you called earlier to <span class="colloc">book a restaurant table</span>. Look! **Carlos** the taxi driver and **Elena** the receptionist are sitting at YOUR table!`;
+        },
+        type: 'challenge_builder',
+        challenge: {
+          instruction: 'Build the Past Perfect sentence to explain what the waiter did BEFORE you arrived:',
+          hint: 'Start with "When we arrived," -> "the waiter" -> "had given" -> "our table to Carlos!"',
+          timeline: {
+            first: '1st (8:45 PM): The waiter had given our table to Carlos',
+            second: '2nd (9:00 PM): We arrived at the restaurant'
+          },
+          blocks: ['our table to Carlos!', 'the waiter', 'When we arrived,', 'had given'],
+          correctOrder: ['When we arrived,', 'the waiter', 'had given', 'our table to Carlos!'],
+          correctFeedback: {
+            title: 'CARLOS & ELENA INVITE YOU TO SIT DOWN!',
+            text: 'Carlos shouts: "Amigos! Sit with us! We ordered a giant mountain of tapas for everyone!"',
+            completedSentence: 'When we arrived, the waiter had given our table to Carlos!',
+            deltas: { money: 0, happiness: +15, disaster: -5 }
+          },
+          incorrectFeedback: {
+            title: 'GOOD EFFORT!',
+            text: 'The correct order is: "When we arrived, the waiter had given our table to Carlos!" Luckily, Carlos invites you to share his table!',
+            completedSentence: 'When we arrived, the waiter had given our table to Carlos!',
+            deltas: { money: 0, happiness: +5, disaster: +10 }
+          },
+          pastPerfectNote: 'When you arrived at the restaurant, the waiter had given your table to Carlos and Elena.',
+          nextScene: 's19_potato_revelation'
+        }
+      },
+
+      /* ------------------------------------------------------------------------
+         ACT 4: THE FINAL DISASTER & CLIMAX (Scenes 19 - 22)
+         ------------------------------------------------------------------------ */
+      s19_potato_revelation: {
+        id: 's19_potato_revelation',
+        act: 'Act 4: The Final Climax',
+        location: '👨‍🍳 Restaurant Dining Room',
+        title: '19. The Secret of the Golden Potatoes!',
+        photo: PHOTOS.potatoes,
+        character: {
+          avatar: '👨‍🍳',
+          name: 'Chef Fernando (Famous TV Chef)',
+          quote: 'STOP THE MUSIC! Someone took my red suitcase at the airport! Inside are my €5,000 Golden Truffle Potatoes for Spanish Television!'
+        },
+        getDescription: () => {
+          if (state.flags.hasPotatoSuitcase) {
+            return `The whole restaurant goes quiet! Chef Fernando is crying. And sitting right under your chair is the red suitcase full of Golden Potatoes that you carried from the <span class="colloc">airport</span>!`;
+          }
+          return `The whole restaurant goes quiet! Chef Fernando is crying because he <span class="colloc">lost his luggage</span> at the airport—the exact red potato suitcase you saw on Day 1!`;
+        },
+        type: 'story',
+        getChoices: () => {
+          const list = [];
+          if (state.flags.hasPotatoSuitcase) {
+            list.push({
+              text: '🥔 Give Chef Fernando his Golden Potato Suitcase right now!',
+              cost: 0,
+              deltas: { money: +100, happiness: +25, disaster: -25 },
+              flagSet: 'potatoReward',
+              outcomeTitle: 'CHEF FERNANDO GIVES YOU €100 REWARD & YOUR REAL SUITCASE!',
+              outcomeText: 'Chef Fernando hugs your whole class! "You saved my TV show! Here is €100 reward, AND I have your real suitcase in my kitchen!"',
+              pastPerfectNote: 'Chef Fernando gave you €100 because you had saved his Golden Truffle Potatoes!',
+              nextScene: 's20_hotel_checkout_chaos'
+            });
+          }
+          list.push({
+            text: 'Phone Officer Ramon at the airport to help Chef Fernando get his potatoes back!',
+            cost: 0,
+            deltas: { money: +30, happiness: +15, disaster: -10 },
+            flagSet: 'helpedCount',
+            outcomeTitle: 'HEROES OF THE RESTAURANT!',
+            outcomeText: 'Officer Ramon sends the potatoes by express courier! Chef Fernando gives you €30 and free dessert!',
+            nextScene: 's20_hotel_checkout_chaos'
+          });
+          list.push({
+            text: 'Hide under the tablecloth and eat more croquetas before anyone blames you!',
+            cost: 0,
+            deltas: { money: 0, happiness: -5, disaster: +25 },
+            outcomeTitle: 'SOUP ON YOUR HEAD!',
+            outcomeText: 'When you hide under the table, a waiter trips and spills cold tomato gazpacho on your shoes!',
+            nextScene: 's20_hotel_checkout_chaos'
+          });
+          return list;
+        }
+      },
+
+      s20_hotel_checkout_chaos: {
+        id: 's20_hotel_checkout_chaos',
+        act: 'Act 4: The Final Climax',
+        location: '⏰ Morning of Your Flight Home',
+        title: '20. Why Didn\'t the Alarm Ring?!',
+        photo: PHOTOS.hotel_desk,
+        character: {
+          avatar: '😱',
+          name: 'Elena the Receptionist',
+          quote: 'Good morning! Your plane leaves in one hour! Wait... why are you still in your pyjamas?!'
+        },
+        getDescription: () => {
+          return `It is the final morning of your holiday. Your <span class="colloc">flight</span> home is at 11:00 AM, and it is already 10:00 AM! Why did everyone wake up so late? Because there was a power cut at night, and your phone alarm didn't ring!`;
+        },
+        type: 'challenge_builder',
+        challenge: {
+          instruction: 'Build the Past Perfect sentence to explain why you woke up late:',
+          hint: 'Start with "We woke up late" -> "because" -> "our alarm" -> "hadn\'t rung."',
+          timeline: {
+            first: "1st (8:00 AM): Our alarm hadn't rung",
+            second: '2nd (10:00 AM): We woke up late'
+          },
+          blocks: ['our alarm', 'We woke up late', "hadn't rung.", 'because'],
+          correctOrder: ['We woke up late', 'because', 'our alarm', "hadn't rung."],
+          correctFeedback: {
+            title: 'QUICK! PACK YOUR BAGS!',
+            text: 'Elena helps you throw your clothes into your bags in 60 seconds flat!',
+            completedSentence: "We woke up late because our alarm hadn't rung.",
+            deltas: { money: 0, happiness: +10, disaster: 0 }
+          },
+          incorrectFeedback: {
+            title: 'NO TIME TO LOSE!',
+            text: 'We say: "We woke up late because our alarm hadn\'t rung." Now run outside!',
+            completedSentence: "We woke up late because our alarm hadn't rung.",
+            deltas: { money: 0, happiness: -5, disaster: +15 }
+          },
+          pastPerfectNote: 'On the last morning, you woke up late because your alarm hadn\'t rung.',
+          nextScene: 's21_race_to_airport'
+        }
+      },
+
+      s21_race_to_airport: {
+        id: 's21_race_to_airport',
+        act: 'Act 4: The Final Climax',
+        location: '🚨 Outside the Hotel — 40 Minutes Before Departure!',
+        title: '21. The Great Race to the Airport!',
+        photo: PHOTOS.taxi_road,
+        character: {
+          avatar: '🚕',
+          name: 'Carlos & Elena',
+          quote: 'How will you get to the airport?! You could take a taxi, or another option is the express train!'
+        },
+        getDescription: () => {
+          return `You must reach the <span class="colloc">airport</span> in 30 minutes or you will <span class="colloc">miss a plane</span> home! Your friends shout suggestions: *"You could take a taxi! Another option is to take the VIP Express Train!"*`;
+        },
+        type: 'story',
+        getChoices: () => {
+          const carlosCost = state.flags.helpedCarlos ? 0 : 20;
+          const carlosLabel = state.flags.helpedCarlos
+            ? '🚕 Ride with Carlos for FREE! (Because you helped him earlier!)'
+            : '🚕 Pay €20 to ride in Carlos\'s taxi ("I know a REAL shortcut this time!").';
+
+          return [
+            {
+              text: '🚄 Book a ticket on the VIP Super-Fast Airport Train for €40.',
+              cost: 40,
+              deltas: { money: -40, happiness: +15, disaster: -15 },
+              outcomeTitle: '300 KM/H LUXURY TRAIN!',
+              outcomeText: 'Zoom! The high-speed train takes you straight to the airport terminal in 12 minutes!',
+              nextScene: 's22_final_boarding'
+            },
+            {
+              text: carlosLabel,
+              cost: carlosCost,
+              deltas: {
+                money: -carlosCost,
+                happiness: state.flags.helpedCarlos ? +20 : +5,
+                disaster: state.flags.helpedCarlos ? -10 : +15
+              },
+              outcomeTitle: state.flags.helpedCarlos ? 'CARLOS DRIVES LIKE FORMULA 1!' : 'CARLOS LOSES A BUMPER!',
+              outcomeText: state.flags.helpedCarlos
+                ? 'Carlos puts a flashing disco light on his taxi roof and gets you to the airport in record time!'
+                : 'The taxi door falls off in the airport car park, but you arrive just in time!',
+              nextScene: 's22_final_boarding'
+            },
+            {
+              text: '🛵 Ride Elena\'s three-wheeled luggage scooter with 5 people on it (FREE!).',
+              cost: 0,
+              deltas: { money: 0, happiness: +10, disaster: +25 },
+              outcomeTitle: 'FIVE TOURISTS ON ONE SCOOTER!',
+              outcomeText: 'Spanish television helicopters film your group riding a tiny hotel luggage cart down the highway!',
+              nextScene: 's22_final_boarding'
+            }
+          ];
+        }
+      },
+
+      s22_final_boarding: {
+        id: 's22_final_boarding',
+        act: 'Act 4: The Final Climax',
+        location: '🛫 Final Boarding Gate to Fly Home',
+        title: '22. Sixty Seconds Before Takeoff!',
+        photo: PHOTOS.airport_gate,
+        character: {
+          avatar: '👩‍✈️',
+          name: 'Airport Agent Sofia',
+          quote: 'It\'s you again! Answer one final question and I will open the plane door for you!'
+        },
+        getDescription: () => {
+          return `You run to <span class="colloc">check in at the airport</span> gate. The plane door is closing! Agent Sofia asks what your group did in Spain BEFORE you arrived at the airport today.`;
+        },
+        type: 'challenge_mc',
+        challenge: {
+          instruction: 'Final Challenge! Choose the correct Past Perfect sentence to get on the plane:',
+          sentenceHtml: '"Before we arrived at the airport today, we <span class="blank-slot">________________________</span>!"',
+          hint: 'Look for "had + past participle" (had survived) to describe what happened BEFORE you arrived at the airport!',
+          timeline: {
+            first: '1st (All Week): We had survived a crazy holiday',
+            second: '2nd (Right Now): We arrived at the airport gate'
+          },
+          options: [
+            { text: 'had survived the craziest holiday in Spain', isCorrect: true },
+            { text: 'survive the craziest holiday tomorrow', isCorrect: false },
+            { text: 'are surviving a holiday yesterday', isCorrect: false }
+          ],
+          correctFeedback: {
+            title: 'THE GATE OPENS! YOU ARE GOING HOME!',
+            text: 'Everyone cheers as your class steps onto the plane! Let\'s see how your holiday turned out!',
+            completedSentence: 'Before we arrived at the airport today, we had survived the craziest holiday in Spain!',
+            deltas: { money: 0, happiness: +15, disaster: -5 }
+          },
+          incorrectFeedback: {
+            title: 'YOU SQUEEZE ONTO THE PLANE JUST IN TIME!',
+            text: 'Remember: we use "had survived" for the action that happened earlier. Agent Sofia laughs and lets you on the plane!',
+            completedSentence: 'Before we arrived at the airport today, we had survived the craziest holiday in Spain!',
+            deltas: { money: 0, happiness: 0, disaster: +10 }
+          },
+          nextScene: 'END_SCREEN'
+        }
+      }
+    };
+
+    /* ==========================================================================
+       6 DISTINCT ENDINGS (Evaluated from Resources, Choices & Story Flags)
+       ========================================================================== */
+    function evaluateEnding() {
+      // 1. Secret Ending: Potato Millionaire & VIP Legends
+      if (state.flags.potatoReward) {
+        return {
+          id: 'ending_secret_potato',
+          badge: '🌟 SECRET ENDING UNLOCKED!',
+          title: 'THE GOLDEN POTATO MILLIONAIRES!',
+          stars: 5,
+          photo: PHOTOS.tapas_food,
+          quote: 'Chef Fernando puts your class on Spanish TV and upgrades your flight to First Class!',
+          description: 'What an unbelievable adventure! Because you carried the mysterious 20-kilo suitcase of Golden Truffle Potatoes across Spain and returned it to Chef Fernando, you became national heroes! You flew home in First Class with €100 extra reward money and free holidays for life!'
+        };
+      }
+
+      // 2. Legendary Disaster (Comedy Gold)
+      if (state.disaster >= 75) {
+        return {
+          id: 'ending_legendary_disaster',
+          badge: '🌋 COMEDY GOLD ENDING',
+          title: 'THE LEGENDARY DISASTER!',
+          stars: 1,
+          photo: PHOTOS.cow_road,
+          quote: 'Spanish TV News calls your group: "The Tourists Who Broke Costa del Sol!"',
+          description: 'Almost everything that could go wrong DID go wrong! From missed planes and exploding hotel computers to cows on the road and five tourists riding a luggage scooter on the highway—your holiday was such a spectacular disaster that a Hollywood director wants to make a comedy movie about your class!'
+        };
+      }
+
+      // 3. Holiday of a Lifetime
+      if (state.happiness >= 75 && state.disaster <= 45) {
+        return {
+          id: 'ending_lifetime',
+          badge: '🏆 BEST ENDING',
+          title: 'HOLIDAY OF A LIFETIME!',
+          stars: 5,
+          photo: PHOTOS.cover,
+          quote: 'Everything worked out wonderfully! You mastered English and conquered Spain!',
+          description: 'Despite a few early surprises at the airport, your class made smart decisions, spoke polite and accurate English, and turned every problem into a triumph! You come home relaxed, smiling, and ready to book your next flight abroad!'
+        };
+      }
+
+      // 4. A Happy Accident
+      if (state.happiness >= 60 && state.disaster > 45) {
+        return {
+          id: 'ending_happy_accident',
+          badge: '🎉 FAN FAVOURITE ENDING',
+          title: 'A HAPPY ACCIDENT!',
+          stars: 4,
+          photo: PHOTOS.spain_town,
+          quote: 'Everything went wrong... and you had the best time of your lives!',
+          description: 'You lost your reservation, got lost with Carlos the taxi driver, and ended up in hospital eating churros—but you laughed the whole way! Your disasters turned into unforgettable friendships. Carlos and Elena are already planning to visit your country next year!'
+        };
+      }
+
+      // 5. The World's Worst Holiday
+      if (state.happiness < 45 && state.disaster >= 55) {
+        return {
+          id: 'ending_worst_holiday',
+          badge: '🌧️ DISASTER ENDING',
+          title: 'THE WORLD\'S WORST HOLIDAY!',
+          stars: 2,
+          photo: PHOTOS.camping_tent,
+          quote: '"Next year, I think we will just stay at home!"',
+          description: 'Between missed flights, lost luggage, sunburn, and goats eating your tent zipper, this trip was exhausting! You finally collapse into your plane seats wearing a giant pink hospital bandage. Next year, you decide to stay at home!'
+        };
+      }
+
+      // 6. Balanced Default: At Least You Got Home!
+      return {
+        id: 'ending_got_home',
+        badge: '✈️ SURVIVOR ENDING',
+        title: 'AT LEAST YOU GOT HOME!',
+        stars: 3,
+        photo: PHOTOS.airport_gate,
+        quote: 'Exhausted, broke, and sunburned—but you survived!',
+        description: 'It was a wild, tiring rollercoaster of a week in Spain! You lost some money and had plenty of hotel and transport problems, but your teamwork got everyone safely onto the plane home with great stories to tell!'
+      };
+    }
+
+    /* ==========================================================================
+       UI HELPERS: RESOURCES, TURN CYCLING & ANIMATIONS
+       ========================================================================== */
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    function applyResourceDeltas(deltas) {
+      if (!deltas) return;
+
+      if (typeof deltas.money === 'number' && deltas.money !== 0) {
+        state.money = Math.max(0, state.money + deltas.money);
+        triggerPillPulse('resMoneyBox', deltas.money > 0);
+      }
+      if (typeof deltas.happiness === 'number' && deltas.happiness !== 0) {
+        state.happiness = clamp(state.happiness + deltas.happiness, 0, 100);
+        triggerPillPulse('resHappyBox', deltas.happiness > 0);
+      }
+      if (typeof deltas.disaster === 'number' && deltas.disaster !== 0) {
+        state.disaster = clamp(state.disaster + deltas.disaster, 0, 100);
+        // For disaster, going UP pulses red, going DOWN pulses green
+        triggerPillPulse('resDisasterBox', deltas.disaster < 0);
+      }
+      updateResourceDisplay();
+    }
+
+    function triggerPillPulse(elementId, isGood) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.classList.remove('pulse-up', 'pulse-down');
+      void el.offsetWidth; // force reflow
+      el.classList.add(isGood ? 'pulse-up' : 'pulse-down');
+    }
+
+    function updateResourceDisplay() {
+      document.getElementById('valMoney').textContent = `€${state.money}`;
+      document.getElementById('valHappy').textContent = state.happiness;
+      document.getElementById('barHappy').style.width = `${state.happiness}%`;
+
+      const happyIcon = document.getElementById('iconHappy');
+      if (state.happiness >= 75) happyIcon.textContent = '😄';
+      else if (state.happiness >= 45) happyIcon.textContent = '🙂';
+      else if (state.happiness >= 25) happyIcon.textContent = '😟';
+      else happyIcon.textContent = '😫';
+
+      document.getElementById('valDisaster').textContent = state.disaster;
+      document.getElementById('barDisaster').style.width = `${state.disaster}%`;
+
+      // Update 5-Player Turn pills
+      document.querySelectorAll('.player-pill').forEach((btn) => {
+        const p = parseInt(btn.getAttribute('data-player'), 10);
+        if (p === state.currentPlayer) {
+          btn.classList.add('active');
+          btn.textContent = `⭐ Player ${p}`;
+        } else {
+          btn.classList.remove('active');
+          btn.textContent = `P${p}`;
+        }
+      });
+    }
+
+    function advancePlayerTurn() {
+      state.currentPlayer = (state.currentPlayer % 5) + 1;
+      updateResourceDisplay();
+    }
+
+    /* ==========================================================================
+       SCENE RENDERING ENGINE
+       ========================================================================== */
+    function renderCurrentScene() {
+      state.isProcessing = false;
+      state.builderSelection = [];
+      const stage = document.getElementById('gameStage');
+
+      if (state.currentSceneId === 'start') {
+        renderStartScreen(stage);
+        return;
+      }
+
+      if (state.currentSceneId === 'END_SCREEN') {
+        renderEndScreen(stage);
+        return;
+      }
+
+      const scene = SCENES[state.currentSceneId];
+      if (!scene) {
+        state.currentSceneId = 's1_airport_checkin';
+        renderCurrentScene();
+        return;
+      }
+
+      const descriptionHtml = typeof scene.getDescription === 'function'
+        ? scene.getDescription()
+        : scene.description;
+
+      const isChallenge = scene.type === 'challenge_mc' || scene.type === 'challenge_builder';
+
+      stage.className = 'game-card';
+      stage.innerHTML = `
+        <!-- LEFT VISUAL COLUMN -->
+        <div class="visual-pane">
+          <div class="scene-svg-fallback">
+            ${getSceneSvgIllustration(scene.photo.theme)}
+          </div>
+          <img
+            class="scene-photo"
+            src="${scene.photo.url}"
+            alt="${scene.title}"
+            onerror="this.style.opacity='0'"
+          />
+          <div class="visual-overlay-top">
+            <span class="act-badge">${scene.act}</span>
+            <span class="location-badge">${scene.location}</span>
+          </div>
+          <div class="visual-overlay-bottom">
+            <div class="character-bubble">
+              <div class="char-avatar">${scene.character.avatar}</div>
+              <div class="char-text-wrap">
+                <div class="char-name">${scene.character.name}</div>
+                <div class="char-quote">"${scene.character.quote}"</div>
+              </div>
+            </div>
+            <div class="photo-credit">
+              <span>${scene.photo.credit}</span>
+              <span>Unit 10: Holidays</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT CONTENT & INTERACTION COLUMN -->
+        <div class="content-pane">
+          <div>
+            <div class="scene-header">
+              <div class="turn-callout">
+                <span>🎤</span>
+                <span>Player ${state.currentPlayer}'s Turn to Lead! (Class can help)</span>
+              </div>
+              <h1 class="scene-title">${scene.title}</h1>
+            </div>
+
+            <div class="scene-description">
+              ${descriptionHtml}
+            </div>
+          </div>
+
+          <div class="interaction-zone" id="interactionZone">
+            <div class="zone-header">
+              <span class="interaction-badge ${isChallenge ? 'badge-challenge' : 'badge-story'}">
+                ${isChallenge ? '🧠 English Challenge' : '🧭 Story Decision — What do you do?'}
+              </span>
+              ${isChallenge ? `<button type="button" class="hint-btn" id="btnToggleHint">💡 Teacher Hint</button>` : ''}
+            </div>
+
+            ${isChallenge ? renderHintBoxHtml(scene.challenge) : ''}
+            ${renderSceneInteractionHtml(scene)}
+          </div>
+        </div>
+      `;
+
+      attachSceneEventListeners(scene);
+    }
+
+    function renderHintBoxHtml(challenge) {
+      let timelineHtml = '';
+      if (challenge.timeline) {
+        timelineHtml = `
+          <div class="timeline-box">
+            <div class="timeline-step">
+              <div class="timeline-step-label">1st Action (Earlier)</div>
+              <div class="timeline-step-text">${challenge.timeline.first}</div>
+            </div>
+            <div class="timeline-arrow">➔</div>
+            <div class="timeline-step step-2">
+              <div class="timeline-step-label">2nd Action (Later)</div>
+              <div class="timeline-step-text">${challenge.timeline.second}</div>
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <div class="hint-box" id="hintBox">
+          <div><strong>💡 Classroom Hint:</strong> ${challenge.hint}</div>
+          ${timelineHtml}
+        </div>
+      `;
+    }
+
+    function renderSceneInteractionHtml(scene) {
+      if (scene.type === 'story') {
+        const choices = typeof scene.getChoices === 'function' ? scene.getChoices() : scene.choices;
+        const letters = ['A', 'B', 'C', 'D'];
+        return `
+          <div class="choices-list">
+            ${choices.map((c, idx) => {
+              const canAfford = state.money >= (c.cost || 0);
+              const costBadge = c.cost > 0
+                ? (canAfford
+                    ? `<span class="cost-tag">-€${c.cost}</span>`
+                    : `<span class="locked-tag">🔒 Need €${c.cost}</span>`)
+                : '';
+              return `
+                <button
+                  type="button"
+                  class="choice-btn"
+                  data-choice-idx="${idx}"
+                  ${!canAfford ? 'disabled' : ''}
+                >
+                  <div class="choice-left">
+                    <span class="choice-letter">${letters[idx]}</span>
+                    <span>${c.text}</span>
+                  </div>
+                  ${costBadge}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      if (scene.type === 'challenge_mc') {
+        const letters = ['A', 'B', 'C'];
+        return `
+          <div class="challenge-prompt-box">
+            <div class="challenge-instruction">${scene.challenge.instruction}</div>
+            <div class="challenge-sentence">${scene.challenge.sentenceHtml}</div>
+          </div>
+          <div class="choices-list">
+            ${scene.challenge.options.map((opt, idx) => `
+              <button
+                type="button"
+                class="choice-btn challenge-opt"
+                data-opt-idx="${idx}"
+              >
+                <div class="choice-left">
+                  <span class="choice-letter">${letters[idx]}</span>
+                  <span>${opt.text}</span>
+                </div>
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      if (scene.type === 'challenge_builder') {
+        return `
+          <div class="challenge-prompt-box">
+            <div class="challenge-instruction">${scene.challenge.instruction}</div>
+          </div>
+          <div class="builder-zone">
+            <div class="builder-answer-box" id="builderAnswerBox">
+              <span class="builder-placeholder">Click the purple word blocks below in order...</span>
+            </div>
+            <div class="word-bank" id="builderWordBank">
+              ${scene.challenge.blocks.map((word, idx) => `
+                <button type="button" class="word-chip" data-block-idx="${idx}">
+                  ${word}
+                </button>
+              `).join('')}
+            </div>
+            <div class="builder-controls">
+              <button type="button" class="btn-secondary" id="btnBuilderClear">↩ Clear Words</button>
+              <button type="button" class="btn-primary-submit" id="btnBuilderSubmit" disabled>✅ Check Sentence</button>
+            </div>
+          </div>
+        `;
+      }
+      return '';
+    }
+
+    /* ==========================================================================
+       INTERACTION EVENT HANDLERS & OUTCOME FEEDBACK CARDS
+       ========================================================================== */
+    function attachSceneEventListeners(scene) {
+      const hintBtn = document.getElementById('btnToggleHint');
+      if (hintBtn) {
+        hintBtn.addEventListener('click', () => {
+          const box = document.getElementById('hintBox');
+          if (box) box.classList.toggle('visible');
+        });
+      }
+
+      if (scene.type === 'story') {
+        const choices = typeof scene.getChoices === 'function' ? scene.getChoices() : scene.choices;
+        document.querySelectorAll('.choice-btn[data-choice-idx]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (state.isProcessing) return;
+            state.isProcessing = true;
+            const idx = parseInt(btn.getAttribute('data-choice-idx'), 10);
+            handleStoryChoice(choices[idx]);
+          });
+        });
+      } else if (scene.type === 'challenge_mc') {
+        document.querySelectorAll('.choice-btn[data-opt-idx]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (state.isProcessing) return;
+            state.isProcessing = true;
+            const idx = parseInt(btn.getAttribute('data-opt-idx'), 10);
+            const selected = scene.challenge.options[idx];
+            handleChallengeOutcome(scene.challenge, selected.isCorrect);
+          });
+        });
+      } else if (scene.type === 'challenge_builder') {
+        setupBuilderListeners(scene.challenge);
+      }
+    }
+
+    function setupBuilderListeners(challenge) {
+      const bankBtns = document.querySelectorAll('#builderWordBank .word-chip');
+      const answerBox = document.getElementById('builderAnswerBox');
+      const clearBtn = document.getElementById('btnBuilderClear');
+      const submitBtn = document.getElementById('btnBuilderSubmit');
+
+      function refreshBuilderUI() {
+        if (state.builderSelection.length === 0) {
+          answerBox.innerHTML = `<span class="builder-placeholder">Click the purple word blocks below in order...</span>`;
+        } else {
+          answerBox.innerHTML = state.builderSelection.map((item, pos) => `
+            <button type="button" class="word-chip in-answer" data-remove-pos="${pos}">
+              ${item.text} ✕
+            </button>
+          `).join('');
+
+          answerBox.querySelectorAll('[data-remove-pos]').forEach((chip) => {
+            chip.addEventListener('click', () => {
+              const pos = parseInt(chip.getAttribute('data-remove-pos'), 10);
+              state.builderSelection.splice(pos, 1);
+              refreshBuilderUI();
+            });
+          });
+        }
+
+        bankBtns.forEach((btn) => {
+          const bIdx = parseInt(btn.getAttribute('data-block-idx'), 10);
+          const isUsed = state.builderSelection.some((s) => s.idx === bIdx);
+          btn.classList.toggle('used', isUsed);
+        });
+
+        submitBtn.disabled = state.builderSelection.length !== challenge.blocks.length;
+      }
+
+      bankBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const bIdx = parseInt(btn.getAttribute('data-block-idx'), 10);
+          if (state.builderSelection.some((s) => s.idx === bIdx)) return;
+          state.builderSelection.push({ idx: bIdx, text: challenge.blocks[bIdx] });
+          refreshBuilderUI();
+        });
+      });
+
+      clearBtn.addEventListener('click', () => {
+        state.builderSelection = [];
+        refreshBuilderUI();
+      });
+
+      submitBtn.addEventListener('click', () => {
+        if (state.isProcessing) return;
+        state.isProcessing = true;
+        const userWords = state.builderSelection.map((s) => s.text);
+        const isCorrect = userWords.join(' ') === challenge.correctOrder.join(' ');
+        handleChallengeOutcome(challenge, isCorrect);
+      });
+    }
+
+    function formatDeltaPills(deltas) {
+      if (!deltas) return '';
+      const pills = [];
+      if (deltas.money) {
+        const sign = deltas.money > 0 ? '+' : '';
+        const cls = deltas.money > 0 ? 'delta-good' : 'delta-bad';
+        pills.push(`<span class="delta-pill ${cls}">💶 Money ${sign}€${deltas.money}</span>`);
+      }
+      if (deltas.happiness) {
+        const sign = deltas.happiness > 0 ? '+' : '';
+        const cls = deltas.happiness > 0 ? 'delta-good' : 'delta-bad';
+        pills.push(`<span class="delta-pill ${cls}">😄 Happiness ${sign}${deltas.happiness}%</span>`);
+      }
+      if (deltas.disaster) {
+        const sign = deltas.disaster > 0 ? '+' : '';
+        // Lower disaster is good, higher disaster is chaotic/bad
+        const cls = deltas.disaster < 0 ? 'delta-good' : 'delta-bad';
+        pills.push(`<span class="delta-pill ${cls}">🌋 Disaster ${sign}${deltas.disaster}%</span>`);
+      }
+      if (pills.length === 0) {
+        pills.push(`<span class="delta-pill delta-neutral">✨ Story Continues</span>`);
+      }
+      return `<div class="delta-pills">${pills.join('')}</div>`;
+    }
+
+    function handleStoryChoice(choice) {
+      applyResourceDeltas(choice.deltas);
+
+      if (choice.flagSet) {
+        if (choice.flagSet === 'helpedCount') {
+          state.flags.helpedCount += 1;
+        } else {
+          state.flags[choice.flagSet] = true;
+        }
+      }
+
+      if (choice.pastPerfectNote) {
+        state.pastPerfectLog.push(choice.pastPerfectNote);
+      }
+
+      const zone = document.getElementById('interactionZone');
+      zone.innerHTML = `
+        <div class="feedback-card story-outcome">
+          <div class="feedback-title" style="color:#0369a1;">
+            <span>🎬</span> <span>${choice.outcomeTitle}</span>
+          </div>
+          <div class="feedback-text">${choice.outcomeText}</div>
+          ${formatDeltaPills(choice.deltas)}
+          <button type="button" class="continue-btn" id="btnNextScene">
+            <span>Continue Adventure</span> <span>➔</span>
+          </button>
+        </div>
+      `;
+
+      document.getElementById('btnNextScene').addEventListener('click', () => {
+        state.currentSceneId = choice.nextScene;
+        advancePlayerTurn();
+        renderCurrentScene();
+      });
+    }
+
+    function handleChallengeOutcome(challenge, isCorrect) {
+      const outcome = isCorrect ? challenge.correctFeedback : challenge.incorrectFeedback;
+      applyResourceDeltas(outcome.deltas);
+
+      if (challenge.pastPerfectNote) {
+        state.pastPerfectLog.push(challenge.pastPerfectNote);
+      }
+
+      let timelineHtml = '';
+      if (challenge.timeline) {
+        timelineHtml = `
+          <div class="timeline-box">
+            <div class="timeline-step">
+              <div class="timeline-step-label">1st Action (Earlier)</div>
+              <div class="timeline-step-text">${challenge.timeline.first}</div>
+            </div>
+            <div class="timeline-arrow">➔</div>
+            <div class="timeline-step step-2">
+              <div class="timeline-step-label">2nd Action (Later)</div>
+              <div class="timeline-step-text">${challenge.timeline.second}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const zone = document.getElementById('interactionZone');
+      zone.innerHTML = `
+        <div class="feedback-card ${isCorrect ? 'correct-outcome' : 'incorrect-outcome'}">
+          <div class="feedback-title" style="color:${isCorrect ? '#15803d' : '#b45309'};">
+            <span>${isCorrect ? '✅' : '💡'}</span>
+            <span>${outcome.title}</span>
+          </div>
+          <div class="completed-sentence-banner">
+            🗣️ "${outcome.completedSentence}"
+          </div>
+          <div class="feedback-text">${outcome.text}</div>
+          ${timelineHtml}
+          ${formatDeltaPills(outcome.deltas)}
+          <button type="button" class="continue-btn" id="btnNextScene">
+            <span>Continue Adventure</span> <span>➔</span>
+          </button>
+        </div>
+      `;
+
+      document.getElementById('btnNextScene').addEventListener('click', () => {
+        state.currentSceneId = challenge.nextScene;
+        advancePlayerTurn();
+        renderCurrentScene();
+      });
+    }
+
+    /* ==========================================================================
+       START SCREEN & FINAL RESULTS SCREEN
+       ========================================================================== */
+    function renderStartScreen(stage) {
+      stage.className = 'game-card full-screen-card';
+      stage.innerHTML = `
+        <div class="visual-pane">
+          <div class="scene-svg-fallback">
+            ${getSceneSvgIllustration('beach')}
+          </div>
+          <img
+            class="scene-photo"
+            src="${PHOTOS.cover.url}"
+            alt="Sunny Holiday in Spain"
+            onerror="this.style.opacity='0'"
+          />
+          <div class="visual-overlay-top">
+            <span class="act-badge">Life Pre-Intermediate • Unit 10</span>
+            <span class="location-badge">🇪🇸 Destination: Spain</span>
+          </div>
+          <div class="visual-overlay-bottom">
+            <div class="character-bubble">
+              <div class="char-avatar">🧳</div>
+              <div class="char-text-wrap">
+                <div class="char-name">Classroom Adventure for 5 Players</div>
+                <div class="char-quote">"You booked a dream holiday in Spain... What could possibly go wrong?!"</div>
+              </div>
+            </div>
+            <div class="photo-credit">
+              <span>${PHOTOS.cover.credit}</span>
+              <span>Interactive English Game</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-pane">
+          <div>
+            <div class="turn-callout">
+              <span>🎉</span>
+              <span>Welcome Players 1, 2, 3, 4 & 5!</span>
+            </div>
+            <h1 class="scene-title" style="font-size:2.4rem; color:#ea580c;">HOLIDAY DISASTER!</h1>
+            <p style="font-size:1.25rem; font-weight:800; color:#475569; margin-top:4px;">
+              Can your class survive the world's worst holiday?
+            </p>
+
+            <div class="scene-description" style="margin-top:16px;">
+              Your class is going on holiday to sunny Spain with <strong>€200</strong>.
+              Work together to make decisions, survive lost passports, exploding hotel computers, and mysterious suitcases full of potatoes!
+            </div>
+
+            <div class="summary-list">
+              <div class="summary-item">
+                <span>🎤</span>
+                <span><strong>Take Turns:</strong> Each scene highlights Player 1 to Player 5. Everyone can help discuss!</span>
+              </div>
+              <div class="summary-item">
+                <span>⏳</span>
+                <span><strong>Past Perfect Power:</strong> Practise <em>had booked</em>, <em>had left</em>, <em>had lost</em>, and holiday collocations.</span>
+              </div>
+              <div class="summary-item">
+                <span>🏆</span>
+                <span><strong>6 Different Endings:</strong> Every choice changes your money, happiness, and disaster level!</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ending-buttons">
+            <button type="button" class="btn-replay btn-normal-replay" id="btnStartNormal">
+              <span>✈️</span> <span>START HOLIDAY ADVENTURE</span>
+            </button>
+            <button type="button" class="btn-replay btn-surprise-replay" id="btnStartSurprise">
+              <span>🎲</span> <span>START SURPRISE MODE</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('btnStartNormal').addEventListener('click', () => {
+        resetGameState(false);
+      });
+      document.getElementById('btnStartSurprise').addEventListener('click', () => {
+        resetGameState(true);
+      });
+    }
+
+    function renderEndScreen(stage) {
+      const ending = evaluateEnding();
+      const starsStr = '⭐'.repeat(ending.stars) + '☆'.repeat(5 - ending.stars);
+
+      // Ensure at least 3-4 Past Perfect recap sentences from their run
+      const recapSentences = [...state.pastPerfectLog];
+      if (recapSentences.length < 3) {
+        recapSentences.push('When you arrived at the airport, the first plane had already left.');
+        recapSentences.push('When you reached the hotel, the computer had lost your reservation.');
+      }
+      const selectedRecaps = recapSentences.slice(0, 4);
+
+      stage.className = 'game-card full-screen-card';
+      stage.innerHTML = `
+        <div class="visual-pane">
+          <div class="scene-svg-fallback">
+            ${getSceneSvgIllustration('ending')}
+          </div>
+          <img
+            class="scene-photo"
+            src="${ending.photo.url}"
+            alt="${ending.title}"
+            onerror="this.style.opacity='0'"
+          />
+          <div class="visual-overlay-top">
+            <span class="act-badge">${ending.badge}</span>
+            <span class="location-badge">🏁 Final Outcome</span>
+          </div>
+          <div class="visual-overlay-bottom">
+            <div class="character-bubble">
+              <div class="char-avatar">🏆</div>
+              <div class="char-text-wrap">
+                <div class="char-name">Holiday Newspaper Headline</div>
+                <div class="char-quote">"${ending.quote}"</div>
+              </div>
+            </div>
+            <div class="photo-credit">
+              <span>${ending.photo.credit}</span>
+              <span>Holiday Disaster!</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-pane">
+          <div>
+            <div class="turn-callout">
+              <span>🎊</span>
+              <span>Holiday Complete! Great Teamwork Players 1–5!</span>
+            </div>
+            <h1 class="scene-title" style="color:#ea580c;">${ending.title}</h1>
+            <div class="stars-row" title="${ending.stars} out of 5 stars">${starsStr}</div>
+
+            <p style="font-size:1.15rem; color:#1e293b; font-weight:600; margin:8px 0 14px;">
+              ${ending.description}
+            </p>
+
+            <div class="final-stats-grid">
+              <div class="final-stat-box">
+                <div class="final-stat-val">💶 €${state.money}</div>
+                <div class="final-stat-lbl">Final Money</div>
+              </div>
+              <div class="final-stat-box">
+                <div class="final-stat-val">😄 ${state.happiness}%</div>
+                <div class="final-stat-lbl">Happiness</div>
+              </div>
+              <div class="final-stat-box">
+                <div class="final-stat-val">🌋 ${state.disaster}%</div>
+                <div class="final-stat-lbl">Disaster Level</div>
+              </div>
+            </div>
+
+            <div class="summary-list">
+              <div style="font-size:0.88rem; font-weight:900; text-transform:uppercase; color:#7c3aed;">
+                📖 Your Holiday Story (Past Simple & Past Perfect):
+              </div>
+              ${selectedRecaps.map((line) => `
+                <div class="summary-item">
+                  <span>✔️</span>
+                  <span>${line}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="ending-buttons">
+            <button type="button" class="btn-replay btn-normal-replay" id="btnPlayAgain">
+              <span>🔄</span> <span>PLAY AGAIN (Try a New Route)</span>
+            </button>
+            <button type="button" class="btn-replay btn-surprise-replay" id="btnNewSurprise">
+              <span>🎲</span> <span>NEW SURPRISE HOLIDAY</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('btnPlayAgain').addEventListener('click', () => {
+        resetGameState(false);
+      });
+      document.getElementById('btnNewSurprise').addEventListener('click', () => {
+        resetGameState(true);
+      });
+    }
+
+    /* ==========================================================================
+       GLOBAL CONTROLS & INITIALISATION
+       ========================================================================== */
+    function initGlobalControls() {
+      // Manual Player Turn Selection
+      document.querySelectorAll('.player-pill').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.currentPlayer = parseInt(btn.getAttribute('data-player'), 10);
+          updateResourceDisplay();
+          const callout = document.querySelector('.turn-callout');
+          if (callout && state.currentSceneId !== 'start' && state.currentSceneId !== 'END_SCREEN') {
+            callout.innerHTML = `<span>🎤</span> <span>Player ${state.currentPlayer}'s Turn to Lead! (Class can help)</span>`;
+          }
+        });
+      });
+
+      // Unit 10 Helper Modal
+      const vocabModal = document.getElementById('vocabModal');
+      document.getElementById('btnVocabHelper').addEventListener('click', () => {
+        vocabModal.classList.add('open');
+      });
+      document.getElementById('btnCloseVocab').addEventListener('click', () => {
+        vocabModal.classList.remove('open');
+      });
+      vocabModal.addEventListener('click', (e) => {
+        if (e.target === vocabModal) vocabModal.classList.remove('open');
+      });
+
+      // Restart Confirmation Modal
+      const restartModal = document.getElementById('restartModal');
+      document.getElementById('btnRestartPrompt').addEventListener('click', () => {
+        restartModal.classList.add('open');
+      });
+      document.getElementById('logoHomeBtn').addEventListener('click', () => {
+        restartModal.classList.add('open');
+      });
+      document.getElementById('btnCancelRestart').addEventListener('click', () => {
+        restartModal.classList.remove('open');
+      });
+      document.getElementById('btnConfirmStandard').addEventListener('click', () => {
+        restartModal.classList.remove('open');
+        resetGameState(false);
+      });
+      document.getElementById('btnConfirmSurprise').addEventListener('click', () => {
+        restartModal.classList.remove('open');
+        resetGameState(true);
+      });
+      restartModal.addEventListener('click', (e) => {
+        if (e.target === restartModal) restartModal.classList.remove('open');
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initGlobalControls();
+      updateResourceDisplay();
+      renderCurrentScene();
+    });
+  </script>
+</body>
+</html>
